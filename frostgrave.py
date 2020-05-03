@@ -5,6 +5,7 @@ from flask import Flask, g, session, render_template, abort, request, flash, red
 import sqlite3
 import os
 import datetime
+from random import randrange
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -49,8 +50,18 @@ def get_members(team):
 
 def get_stats(id):
     db = get_db()
+    stats = None
+    combat_weapon = None
+    shoot_weapon = None
     cur = db.execute("SELECT * FROM minis WHERE id = {}".format(id))
-    return cur.fetchall()
+    stats = cur.fetchall()[0]
+    if stats[7] != 0: # combat weapon 
+        cur = db.execute("SELECT * FROM weapons WHERE rowid = {}".format(stats[7]))
+        combat_weapon = cur.fetchall()[0]
+    if stats[8] != 0: # shoot weapon 
+        cur = db.execute("SELECT * FROM weapons WHERE rowid = {}".format(stats[8]))
+        shoot_weapon = cur.fetchall()[0]
+    return stats, combat_weapon, shoot_weapon
 
 @app.route('/')
 def hello():
@@ -61,13 +72,24 @@ def hello():
     
 @app.route('/fight/', methods=['POST'])
 def fight():
-    stats1 = get_stats(request.form['mini1'])
-    stats2 = get_stats(request.form['mini2'])
+    s1, cw1, sw1 = get_stats(request.form['mini1'])
+    s2, cw2, sw2 = get_stats(request.form['mini2'])
     combat_type = request.form['fight'] == 'combat'
-    for i in stats2:
-        print(i[1])
-    return render_template('fight.html', stats1=stats1, stats2=stats2, combat_type=combat_type)
+    msg = ''
+    if not combat_type and sw1 is None:
+        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[1])
+    return render_template('fight.html', s1=s1, cw1=cw1, sw1=sw1, s2=s2, cw2=cw2, sw2=sw2, combat_type=combat_type, msg=msg)
     
+@app.route('/shoot/', methods=['POST'])
+def shoot():
+    s1, _, _ = get_stats(request.form['mini1'])
+    s2, _, _ = get_stats(request.form['mini2'])
+    s_dice = randrange(20) + 1
+    t_dice = randrange(20) + 1
+    s_total = s_dice + int(request.form['S'])
+    t_total = t_dice + int(request.form['F'])
+    return "Shoot {} to {}".format(request.form['mini1'], request.form['mini2'])
+
 
 if __name__ == '__main__':
     app.run()

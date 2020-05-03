@@ -1,52 +1,60 @@
 <!doctype html>
 <h1>Frostgrave</h1>
 <h2>Check modifiers:</h2>
+<p style="color:red">{{ msg }}</p>
+    
 {% if combat_type:%}
-    <p>{{ stats1[0].name }} hand to hand combat with {{ stats2[0].name }}</p>
+    <p>{{ s1.name }} hand to hand combat with {{ s2.name }}</p>
 {% else: %}
-    <p>{{ stats1[0].name }} shoots {{ stats2[0].name }}</p>
-
-    <form>
+    <p>{{ s1.name }} shoots {{ s2.name }}</p>
+    <form action="{{ url_for('shoot') }}" method=post>
+        <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
+        <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
         <table>
             <tr>
-              <th>Shooter: {{ stats1[0].name }}</th>
-              <th>Target: {{ stats2[0].name }}</th>
+              <td><b>Shooter:</b></td> <td> {{ s1.name }}</td>
+              <td><b>Target:</b></td> <td>{{ s2.name }}</td>
             </tr>
             <tr>
-              <td>S:</td>
-              <td><input type="number" id="S" name="S" min="-5" max="5" value={{ stats1[0].S }}></td>
-              <td>F:</td>
-              <td><input type="number" id="S" name="S" min="-5" max="5" value={{ stats2[0].F }}></td>
+              <td><b>S:</b></td> <td><input type="number" id="S" name="S" min="-5" max="5" value={{ s1.S }}></td>
+              <td><b>F:</b></td> <td><input type="number" id="F" name="F" min="-5" max="5" value={{ s2.F }}></td>
+            </tr>
+            <tr>  
+              <td><b>Weapon mod.:</b></td><td><input type="number" id="w1_m" name="w1_m" min="-5" max="5" value={{ sw1.damage_mod }}></td>
+              <td><b>Armour mod.:</b></td><td><input type="number" id="w2_m" name="w2_m" min="-5" max="20" value={{ s2.A }}></td>
             </tr>
             <tr>
-              <td>Weapon modifier:</td> 
-              <td>+0</td> <!-- TODO!!-->
-              <td>Armour modifier:</td> 
-              <td><input type="number" id="S" name="S" min="0" max="20" value={{ stats2[0].A }}></td>
+                <td>Intervining terrain:</td> <td><input type="number" id="IT" name="IT" min="0" max="20" value="0"></td>
             </tr>
-          </table>
+            <tr>
+                <td>Cover: </td> 
+                <td>
+                    <input type="radio" id="c_none" value="c_none" name="cover" checked>
+                    <label for="c_none">None</label>
+                </td>
+                <td>
+                    <input type="radio" id="c_light" value="c_light" name="cover">
+                    <label for="c_light">Light</label>
+                </td>
+                <td>
+                    <input type="radio" id="c_heavy" value="c_heavy" name="cover">
+                    <label for="c_heavy">Heavy</label>
+                </td>
+            </tr>
+            <tr>
+                <td>Hasty Shoot</td>
+                <td>
+                    <input type="checkbox" id="hasty" name="hasty" value="hasty">
+                </td>
+            </tr>
+            <tr>
+                <td>Large Target</td>
+                <td>
+                    <input type="checkbox" id="large" name="large" value="large">
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Shoot!">
     </form>
 
 {% endif %}
-
-<!-- <form action="{{ url_for('fight') }}" method=post class=add-task>
-    <select id="team1" name="mini1">
-        {% for m in team1 %}
-            <option value="{{ m.id }}"> {{ m.name }}</option>
-        {% endfor %}
-    </select>
-    VS.
-    <select id="team2" name="mini2">
-        {% for m in team2 %}
-            <option value="{{ m.id }}"> {{ m.name }}</option>
-        {% endfor %}
-    </select>
-
-    <div>
-        <input type="radio" id="combat" name="fight" value="combat" checked>
-        <label for="combat">Combat</label><br>
-        <input type="radio" id="shoot" name="fight" value="shoot">
-        <label for="shoot">Shoot</label><br>
-    </div>
-    <input type="submit" value="Fight!">
-</form> -->
