@@ -1,0 +1,24 @@
+<!doctype html>
+<h1>Frostgrave</h1>
+<h2>Select players to fight:</h2>
+<form action="{{ url_for('fight') }}" method=post class=add-task>
+    <select id="team1" name="mini1">
+        {% for m in team1 %}
+            <option value="{{ m.id }}"> {{ m.name }}</option>
+        {% endfor %}
+    </select>
+    VS.
+    <select id="team2" name="mini2">
+        {% for m in team2 %}
+            <option value="{{ m.id }}"> {{ m.name }}</option>
+        {% endfor %}
+    </select>
+
+    <div>
+        <input type="radio" id="combat" name="fight" value="combat" checked>
+        <label for="combat">Combat</label><br>
+        <input type="radio" id="shoot" name="fight" value="shoot">
+        <label for="shoot">Shoot</label><br>
+    </div>
+    <input type="submit" value="Fight!">
+</form>
