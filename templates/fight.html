@@ -5,6 +5,28 @@
     <p>{{ stats1[0].name }} hand to hand combat with {{ stats2[0].name }}</p>
 {% else: %}
     <p>{{ stats1[0].name }} shoots {{ stats2[0].name }}</p>
+
+    <form>
+        <table>
+            <tr>
+              <th>Shooter: {{ stats1[0].name }}</th>
+              <th>Target: {{ stats2[0].name }}</th>
+            </tr>
+            <tr>
+              <td>S:</td>
+              <td><input type="number" id="S" name="S" min="-5" max="5" value={{ stats1[0].S }}></td>
+              <td>F:</td>
+              <td><input type="number" id="S" name="S" min="-5" max="5" value={{ stats2[0].F }}></td>
+            </tr>
+            <tr>
+              <td>Weapon modifier:</td> 
+              <td>+0</td> <!-- TODO!!-->
+              <td>Armour modifier:</td> 
+              <td><input type="number" id="S" name="S" min="0" max="20" value={{ stats2[0].A }}></td>
+            </tr>
+          </table>
+    </form>
+
 {% endif %}
 
 <!-- <form action="{{ url_for('fight') }}" method=post class=add-task>
