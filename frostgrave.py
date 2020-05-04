@@ -114,8 +114,47 @@ def shoot():
     new_health = max(health - damage, 0)
     kill = (new_health <= 0)
     
-    return render_template('combat_results.html', s1=s1[1], s2=s2[1], s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
+    return render_template('shoot_results.html', s1=s1[1], s2=s2[1], s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
                            health=health, new_health=new_health, w_mod=int(request.form.get('w1_m')), armour=int(request.form.get('armour')))
+
+@app.route('/combat/', methods=['POST'])
+def combat():
+    s1, _, _ = get_stats(request.form.get('mini1'))
+    s2, _, _ = get_stats(request.form.get('mini2'))
+    p1_dice = randrange(20) + 1
+    p2_dice = randrange(20) + 1
+    
+    sup1 = max(int(request.form.get('sup1')) - int(request.form.get('sup2')), 0) * 2
+    sup2 = max(int(request.form.get('sup2')) - int(request.form.get('sup1')), 0) * 2
+    p1_mod = int(request.form.get('F1')) + sup1
+    p2_mod = int(request.form.get('F2')) + sup2
+
+    damage1 = 0
+    damage2 = 0
+    winner = 0
+    if (p1_dice + p1_mod) > (p2_dice + p2_mod):
+        print("p1 wins")
+        damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
+        winner = 1
+    elif (p1_dice + p1_mod) < (p2_dice + p2_mod):
+        print("p2 wins")
+        damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
+        winner = 2
+    else:
+        print("draw")
+        damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
+        damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
+    print("damage1: {}, damage2: {}".format(damage1, damage2))
+    
+    health1 = int(s1[11])
+    health2 = int(s2[11])
+    new_health1 = max(health1 - damage1, 0)
+    new_health2 = max(health2 - damage2, 0)
+    
+    return render_template('combat_results.html', s1=s1[1], s2=s2[1], p1_dice=p1_dice, p2_dice=p2_dice, p1_mod=p1_mod, p2_mod=p2_mod, 
+                           damage1=damage1, damage2=damage2, wp1=int(request.form.get('wp1')), wp2=int(request.form.get('wp2')),
+                           a1=int(request.form.get('a1')), a2=int(request.form.get('a2')), winner=winner,
+                           health1=health1, new_health1=new_health1, health2=health2, new_health2=new_health2)
 
 
 if __name__ == '__main__':

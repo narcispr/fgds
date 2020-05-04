@@ -1,13 +1,43 @@
 <!doctype html>
 <h1>Frostgrave</h1>
 <h2>Combat resuts:</h2>
-<p>{{ s1 }} Vs. {{ s2 }}</p>
-<p>[{{ s_dice }}] + {{ s_mod }} Vs. [{{ t_dice }}] + {{ t_mod }}</p>
-{% if damage > 0 %}
-    <p>damage: {{ s_dice }} + {{ s_mod }} + {{w_mod }} - {{ armour }} = {{ damage }}</p>
-    <p>health: {{ health }} - {{ damage }} = {{ new_health }}</p>
-    {% if new_health == 0 %}
-        <p style="color:red">KILLED!</p>
+<p>{{ s1 }}: [{{ p1_dice }}] + {{ p1_mod }} Vs. {{ s2 }}: [{{ p2_dice }}] + {{ p2_mod }}</p>
+{% if winner == 1 %}
+    <p>{{ s1 }} wins!</p>
+    <p>{{ s1 }} Vs. {{ s2 }}</p>
+    <p>damage: {{ p1_dice }} + {{ p1_mod }} + {{wp1 }} - {{ a2 }} = {{ damage2 }}</p>
+    <p>{{ s2 }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
+    {% if new_health2 == 0 %}
+        <p style="color:red">{{ s2 }} KILLED!</p>
     {% endif %}    
+{% elif winner == 2 %}
+    <p>{{ s2 }} wins!</p>
+    <p>{{ s2 }} Vs. {{ s1 }}</p>
+    <p>damage: {{ p2_dice }} + {{ p2_mod }} + {{wp2 }} - {{ a1 }} = {{ damage1 }}</p>
+    <p>{{ s1 }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
+    {% if new_health1 == 0 %}
+        <p style="color:red">{{ s1 }} KILLED!</p>
+    {% endif %}    
+{% elif winner == 0 %}
+    <p>Draw!</p>
+
+    <p>{{ s1 }} Vs. {{ s2 }}</p>
+    <p>damage: {{ p1_dice }} + {{ p1_mod }} + {{wp1 }} - {{ a2 }} = {{ damage2 }}</p>
+    <p>{{ s2 }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
+    {% if new_health2 == 0 %}
+        <p style="color:red">{{ s2 }} KILLED!</p>
+    {% endif %}   
+
+    <p>{{ s2 }} Vs. {{ s1 }}</p>
+    <p>damage: {{ p2_dice }} + {{ p2_mod }} + {{wp2 }} - {{ a1 }} = {{ damage1 }}</p>
+    <p>{{ s1 }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
+    {% if new_health1 == 0 %}
+        <p style="color:red">{{ s1 }} KILLED!</p>
+    {% endif %}    
+    
 {% endif %}
+
+
+
+
 <p></p>
