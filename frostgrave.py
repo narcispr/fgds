@@ -86,9 +86,36 @@ def shoot():
     s2, _, _ = get_stats(request.form['mini2'])
     s_dice = randrange(20) + 1
     t_dice = randrange(20) + 1
-    s_total = s_dice + int(request.form['S'])
-    t_total = t_dice + int(request.form['F'])
-    return "Shoot {} to {}".format(request.form['mini1'], request.form['mini2'])
+    
+    s_mod = int(request.form['S'])
+    
+    cover = 0
+    if request.form.get('cover') == 'l_cover':
+        cover = 2
+    elif request.form.get('cover') == 'h_cover':
+        cover = 4
+    hasty = 0
+    if request.form.get('hasty') == 'hasty':
+        hasty = 1
+    
+    large = 0
+    if request.form.get('large') == 'large':
+        large = -2
+    
+    t_mod = int(request.form.get('F')) + int(request.form.get('IT')) + cover + hasty + large
+    
+    damage = 0
+    if (s_dice + s_mod) > (t_dice + t_mod):
+        d_total = s_dice + s_mod + int(request.form.get('w1_m'))
+        a_total = int(request.form.get('armour'))
+        damage = max(d_total - a_total, 0)
+    
+    health = int(s2[11])
+    new_health = max(health - damage, 0)
+    kill = (new_health <= 0)
+    
+    return render_template('combat_results.html', s1=s1[1], s2=s2[1], s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
+                           health=health, new_health=new_health, w_mod=int(request.form.get('w1_m')), armour=int(request.form.get('armour')))
 
 
 if __name__ == '__main__':

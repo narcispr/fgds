@@ -1,0 +1,13 @@
+<!doctype html>
+<h1>Frostgrave</h1>
+<h2>Combat resuts:</h2>
+<p>{{ s1 }} Vs. {{ s2 }}</p>
+<p>[{{ s_dice }}] + {{ s_mod }} Vs. [{{ t_dice }}] + {{ t_mod }}</p>
+{% if damage > 0 %}
+    <p>damage: {{ s_dice }} + {{ s_mod }} + {{w_mod }} - {{ armour }} = {{ damage }}</p>
+    <p>health: {{ health }} - {{ damage }} = {{ new_health }}</p>
+    {% if new_health == 0 %}
+        <p style="color:red">KILLED!</p>
+    {% endif %}    
+{% endif %}
+<p></p>
