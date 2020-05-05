@@ -1,9 +1,7 @@
-package fgcalc;
+package com.palosoft.fgcalc;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Objects;
-import java.io.IOException;
-import org.json.simple.JSONObject;
- 
 public class Weapon {
     String name;
     int range;
@@ -14,7 +12,7 @@ public class Weapon {
         this.name = "Weapon";
         this.range = 0;
         this.damageMod = 0;
-        this.armourMod = 0; 
+        this.armourMod = 0;
     }
 
     public Weapon(final String name, final int range, final int damage_mod, final int armour_mod) {
@@ -61,36 +59,19 @@ public class Weapon {
         return this;
     }
 
-    public Weapon range(int range) {
+    public Weapon range(final int range) {
         this.range = range;
         return this;
     }
 
-    public Weapon damageMod(int damageMod) {
+    public Weapon damageMod(final int damageMod) {
         this.damageMod = damageMod;
         return this;
     }
 
-    public Weapon armourMod(int armourMod) {
+    public Weapon armourMod(final int armourMod) {
         this.armourMod = armourMod;
         return this;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Weapon)) {
-            return false;
-        }
-        final Weapon weapon = (Weapon) o;
-        return Objects.equals(name, weapon.name) && range == weapon.range && damageMod == weapon.damageMod
-                && armourMod == weapon.armourMod;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, range, damageMod, armourMod);
     }
 
     public String toString() {
@@ -112,13 +93,17 @@ public class Weapon {
 
     public JSONObject getJSON() {
         JSONObject weapon = new JSONObject();
-        weapon.put("name", getName());
-        weapon.put("range", getRange());
-        weapon.put("damage_mod", getDamageMod());
-        weapon.put("armour_mod", getArmourMod());
+        try {
+            weapon.put("name", getName());
+            weapon.put("range", getRange());
+            weapon.put("damage_mod", getDamageMod());
+            weapon.put("armour_mod", getArmourMod());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return weapon;
     }
-            
+
     public static void main(final String[] args) {
         final Weapon w = new Weapon("Staff", 0, -1, -1);
         System.out.println(w);
