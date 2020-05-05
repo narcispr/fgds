@@ -1,5 +1,4 @@
-package fgcalc;
-
+package palosoft.fgcalc;
 import java.util.Objects;
 import java.io.IOException;
 import org.json.simple.JSONObject;
@@ -57,21 +56,22 @@ public class Weapon {
     }
 
     public Weapon name(String name) {
+        this.name = namfinal String name) {
         this.name = name;
         return this;
     }
 
-    public Weapon range(int range) {
+    public Weapon range(final int range) {
         this.range = range;
         return this;
     }
 
-    public Weapon damageMod(int damageMod) {
+    public Weapon damageMod(final int damageMod) {
         this.damageMod = damageMod;
         return this;
     }
 
-    public Weapon armourMod(int armourMod) {
+    public Weapon armourMod(final int armourMod) {
         this.armourMod = armourMod;
         return this;
     }
@@ -111,8 +111,7 @@ public class Weapon {
     }
 
     public JSONObject getJSON() {
-        JSONObject weapon = new JSONObject();
-        weapon.put("name", getName());
+        final weapon.put("name", getName());
         weapon.put("range", getRange());
         weapon.put("damage_mod", getDamageMod());
         weapon.put("armour_mod", getArmourMod());
