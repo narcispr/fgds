@@ -1,7 +1,7 @@
 <!doctype html>
 <h1>Frostgrave</h1>
 <h2>Shoot resuts:</h2>
-<p>{{ s1 }} Vs. {{ s2 }}</p>
+<p>{{ s1.name }} Vs. {{ s2.name }}</p>
 <p>[{{ s_dice }}] + {{ s_mod }} Vs. [{{ t_dice }}] + {{ t_mod }}</p>
 {% if damage > 0 %}
     <p>damage: {{ s_dice }} + {{ s_mod }} + {{w_mod }} - {{ armour }} = {{ damage }}</p>
@@ -10,4 +10,10 @@
         <p style="color:red">KILLED!</p>
     {% endif %}    
 {% endif %}
-<p></p>
+<form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
+    <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
+    <input type="hidden" id="health1" name="health1" value={{ s1.H }}>
+    <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
+    <input type="hidden" id="health2" name="health2" value={{ new_health }}>
+    <input type="submit" value="Apply">
+</form>

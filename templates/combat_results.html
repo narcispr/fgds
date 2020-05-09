@@ -1,41 +1,46 @@
 <!doctype html>
 <h1>Frostgrave</h1>
 <h2>Combat resuts:</h2>
-<p>{{ s1 }}: [{{ p1_dice }}] + {{ p1_mod }} Vs. {{ s2 }}: [{{ p2_dice }}] + {{ p2_mod }}</p>
+<p>{{ s1.name }}: [{{ p1_dice }}] + {{ p1_mod }} Vs. {{ s2.name }}: [{{ p2_dice }}] + {{ p2_mod }}</p>
 {% if winner == 1 %}
-    <p>{{ s1 }} wins!</p>
-    <p>{{ s1 }} Vs. {{ s2 }}</p>
+    <p>{{ s1.name }} wins!</p>
+    <p>{{ s1.name }} Vs. {{ s2.name }}</p>
     <p>damage: {{ p1_dice }} + {{ p1_mod }} + {{wp1 }} - {{ a2 }} = {{ damage2 }}</p>
-    <p>{{ s2 }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
+    <p>{{ s2.name }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
     {% if new_health2 == 0 %}
-        <p style="color:red">{{ s2 }} KILLED!</p>
+        <p style="color:red">{{ s2.name }} KILLED!</p>
     {% endif %}    
 {% elif winner == 2 %}
-    <p>{{ s2 }} wins!</p>
-    <p>{{ s2 }} Vs. {{ s1 }}</p>
+    <p>{{ s2.name }} wins!</p>
+    <p>{{ s2.name }} Vs. {{ s1.name }}</p>
     <p>damage: {{ p2_dice }} + {{ p2_mod }} + {{wp2 }} - {{ a1 }} = {{ damage1 }}</p>
-    <p>{{ s1 }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
+    <p>{{ s1.name }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
     {% if new_health1 == 0 %}
-        <p style="color:red">{{ s1 }} KILLED!</p>
+        <p style="color:red">{{ s1.name }} KILLED!</p>
     {% endif %}    
 {% elif winner == 0 %}
     <p>Draw!</p>
-
-    <p>{{ s1 }} Vs. {{ s2 }}</p>
+    <p>{{ s1.name }} Vs. {{ s2.name }}</p>
     <p>damage: {{ p1_dice }} + {{ p1_mod }} + {{wp1 }} - {{ a2 }} = {{ damage2 }}</p>
-    <p>{{ s2 }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
+    <p>{{ s2.name }} health: {{ health2 }} - {{ damage2 }} = {{ new_health2 }}</p>
     {% if new_health2 == 0 %}
-        <p style="color:red">{{ s2 }} KILLED!</p>
+        <p style="color:red">{{ s2.name }} KILLED!</p>
     {% endif %}   
-
-    <p>{{ s2 }} Vs. {{ s1 }}</p>
+    <p>{{ s2.name }} Vs. {{ s1.name }}</p>
     <p>damage: {{ p2_dice }} + {{ p2_mod }} + {{wp2 }} - {{ a1 }} = {{ damage1 }}</p>
-    <p>{{ s1 }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
+    <p>{{ s1.name }} health: {{ health1 }} - {{ damage1 }} = {{ new_health1 }}</p>
     {% if new_health1 == 0 %}
-        <p style="color:red">{{ s1 }} KILLED!</p>
-    {% endif %}    
-    
+        <p style="color:red">{{ s1.name }} KILLED!</p>
+    {% endif %}        
 {% endif %}
+
+<form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
+    <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
+    <input type="hidden" id="health1" name="health1" value={{ new_health1 }}>
+    <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
+    <input type="hidden" id="health2" name="health2" value={{ new_health2 }}>
+    <input type="submit" value="Apply">
+</form>
 
 
 

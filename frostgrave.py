@@ -45,7 +45,7 @@ def get_db():
 
 def get_members(team):
     db = get_db()
-    cur = db.execute("SELECT * FROM minis WHERE team = {}".format(team))
+    cur = db.execute("SELECT * FROM minis WHERE team = {} AND H > 0".format(team))
     return cur.fetchall()
 
 def get_stats(id):
@@ -114,7 +114,7 @@ def shoot():
     new_health = max(health - damage, 0)
     kill = (new_health <= 0)
     
-    return render_template('shoot_results.html', s1=s1[1], s2=s2[1], s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
+    return render_template('shoot_results.html', s1=s1, s2=s2, s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
                            health=health, new_health=new_health, w_mod=int(request.form.get('w1_m')), armour=int(request.form.get('armour')))
 
 @app.route('/combat/', methods=['POST'])
@@ -151,11 +151,29 @@ def combat():
     new_health1 = max(health1 - damage1, 0)
     new_health2 = max(health2 - damage2, 0)
     
-    return render_template('combat_results.html', s1=s1[1], s2=s2[1], p1_dice=p1_dice, p2_dice=p2_dice, p1_mod=p1_mod, p2_mod=p2_mod, 
+    return render_template('combat_results.html', s1=s1, s2=s2, p1_dice=p1_dice, p2_dice=p2_dice, p1_mod=p1_mod, p2_mod=p2_mod, 
                            damage1=damage1, damage2=damage2, wp1=int(request.form.get('wp1')), wp2=int(request.form.get('wp2')),
                            a1=int(request.form.get('a1')), a2=int(request.form.get('a2')), winner=winner,
                            health1=health1, new_health1=new_health1, health2=health2, new_health2=new_health2)
 
 
+
+def update_health(mini, new_health):
+    db = get_db()
+    db.execute("UPDATE minis SET H = {} WHERE ID = {}".format(new_health, mini))
+    db.commit()
+    
+@app.route('/apply_new_health/', methods=['POST'])
+def apply_new_health():
+    mini1 = request.form.get('mini1')
+    mini2 = request.form.get('mini2')
+    health1 = request.form.get('health1')
+    health2 = request.form.get('health2')
+    print("mini {}: {}, mini {}: {}".format(mini1, health1, mini2, health2))
+    update_health(int(mini1), int(health1))
+    update_health(int(mini2), int(health2))
+    
+    return redirect(url_for('hello'))
+   
 if __name__ == '__main__':
     app.run()
