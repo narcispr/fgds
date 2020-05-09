@@ -71,7 +71,13 @@ def hello():
     minis_1 = get_members('initial')
     minis_2 = get_members('initial')
     return render_template('select_minis.html', team1=minis_1, team2=minis_2)
-    
+
+@app.route('/show')
+def show():
+    db = get_db()
+    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ".format(USER_ID))
+    minis = cur.fetchall()
+    return render_template('show_minis.html', minis=minis)
     
 @app.route('/fight/', methods=['POST'])
 def fight():
@@ -174,6 +180,56 @@ def apply_new_health():
     update_health(int(mini2), int(health2))
     
     return redirect(url_for('hello'))
-   
+
+
+@app.route('/delete_mini/<int:mini>')
+def delete_mini(mini):
+    db = get_db()
+    db.execute("DELETE FROM minis WHERE rowid = {} AND USER = \"{}\"".format(mini, USER_ID))
+    db.commit()
+    return redirect(url_for('show'))
+
+
+@app.route('/add_mini/')
+def add_mini():
+    return render_template('add_mini.html')
+
+@app.route('/edit_mini/<int:mini>')
+def edit_mini(mini):
+    mini = get_stats(mini)
+    return render_template('edit_mini.html', mini=mini)
+
+@app.route('/add/', methods=['POST'])
+def add():
+    a = request.form.get('add') == "1"
+    print("Add: {}".format(a))
+    t = request.form.get('type')
+    name = request.form.get('name')
+    l = request.form.get('list')
+    M = int(request.form.get('M'))
+    F = int(request.form.get('F'))
+    S = int(request.form.get('S'))
+    A = int(request.form.get('A'))
+    W = int(request.form.get('W'))
+    H = int(request.form.get('H'))
+    cwp_name = request.form.get('cwp_name')
+    cwp_damage_mod = int(request.form.get('cwp_damage_mod'))
+    cwp_armour_mod = int(request.form.get('cwp_armour_mod'))
+    swp_name = request.form.get('swp_name')
+    swp_range = int(request.form.get('swp_range'))
+    swp_damage_mod = int(request.form.get('swp_damage_mod'))
+    if a:
+        command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod) VALUES ({}, \"{}\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {})".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod)
+    else:
+        id = int(request.form.get('id'))
+        command = "UPDATE minis SET type={}, name=\"{}\", list=\"{}\", user=\"{}\", M={}, F={}, S={}, A={}, W={}, H={}, cwp_name=\"{}\", cwp_damage_mod={}, cwp_armour_mod={}, swp_name=\"{}\", swp_range={}, swp_damage_mod={} WHERE rowid={}".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, id)
+    
+    print(command)
+    db = get_db()
+    db.execute(command)
+    db.commit()
+    
+    return redirect(url_for('show'))
+
 if __name__ == '__main__':
     app.run()

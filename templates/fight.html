@@ -1,5 +1,6 @@
-<!doctype html>
-<h1>Frostgrave</h1>
+{% extends "layout.html" %}
+{% block body %}
+
 <h2>Check modifiers:</h2>
 <p style="color:red">{{ msg }}</p>
     
@@ -86,3 +87,4 @@
     </form>
 
 {% endif %}
+{% endblock %}

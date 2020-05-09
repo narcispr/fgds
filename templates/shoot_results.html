@@ -1,5 +1,6 @@
-<!doctype html>
-<h1>Frostgrave</h1>
+{% extends "layout.html" %}
+{% block body %}
+
 <h2>Shoot resuts:</h2>
 <p>{{ s1.name }} Vs. {{ s2.name }}</p>
 <p>[{{ s_dice }}] + {{ s_mod }} Vs. [{{ t_dice }}] + {{ t_mod }}</p>
@@ -19,3 +20,5 @@
     <input type="hidden" id="health2" name="health2" value={{ new_health }}>
     <input type="submit" value="Apply">
 </form>
+
+{% endblock %}

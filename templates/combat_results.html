@@ -1,5 +1,6 @@
-<!doctype html>
-<h1>Frostgrave</h1>
+{% extends "layout.html" %}
+{% block body %}
+
 <h2>Combat resuts:</h2>
 <p>{{ s1.name }}: [{{ p1_dice }}] + {{ p1_mod }} Vs. {{ s2.name }}: [{{ p2_dice }}] + {{ p2_mod }}</p>
 {% if winner == 1 %}
@@ -38,7 +39,4 @@
     <input type="submit" value="Apply">
 </form>
 
-
-
-
-<p></p>
+{% endblock%}

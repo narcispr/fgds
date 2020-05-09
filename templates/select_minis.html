@@ -1,5 +1,6 @@
-<!doctype html>
-<h1>Frostgrave</h1>
+{% extends "layout.html" %}
+{% block body %}
+
 <h2>Select players to fight:</h2>
 <form action="{{ url_for('fight') }}" method=post class=add-task>
     <select id="team1" name="mini1">
@@ -22,3 +23,5 @@
     </div>
     <input type="submit" value="Fight!">
 </form>
+
+{% endblock %}
