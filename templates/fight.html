@@ -7,11 +7,11 @@
     <p>{{ s1.name }} hand to hand combat with {{ s2.name }}</p>
     <p>{{ s1.name }} shoots {{ s2.name }}</p>
     <form action="{{ url_for('combat') }}" method=post>
-        <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
-        <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
+        <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
+        <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
         <table>
             <tr>
-                <td>{{ s1.name }}</td> <td>{{ s2.name }}</td>
+                <td>{{ s1.name }} ({{ s1.H }})</td> <td>{{ s2.name }} ({{ s2.H }})</td>
             </tr>
             <tr>
                 <td>F: <input type="number" id="F1" name="F1" min="-5" max="5" value={{ s1.F }}></td> 
@@ -21,15 +21,13 @@
                 <td>Supporters: <input type="number" id="sup2" name="sup2" min="0" max="10" value="0"> </td>
             </tr>
             </tr>
-                <td>Weapon Mod.: <input type="number" id="wp1" name="wp1" min="-5" max="5" value={{ cw1.damage_mod }}> </td>
-                <td>Weapon Mod.: <input type="number" id="wp2" name="wp2" min="-5" max="5" value={{ cw2.damage_mod }}> </td>
+                <td>Weapon Mod.: <input type="number" id="wp1" name="wp1" min="-5" max="5" value={{ s1.cwp_damage_mod }}> </td>
+                <td>Weapon Mod.: <input type="number" id="wp2" name="wp2" min="-5" max="5" value={{ s2.cwp_damage_mod }}> </td>
             </tr>
             </tr>
-                <td>Armour: <input type="number" id="a1" name="a1" min="-5" max="20" value={{ s1.A - cw1.armour_mod }}> </td>
-                <td>Armour: <input type="number" id="a2" name="a2" min="-5" max="20" value={{ s2.A - cw2.armour_mod }}> </td>
+                <td>Armour: <input type="number" id="a1" name="a1" min="-5" max="20" value={{ s1.A - s1.cwp_armour_mod }}> </td>
+                <td>Armour: <input type="number" id="a2" name="a2" min="-5" max="20" value={{ s2.A - s2.cwp_armour_mod }}> </td>
             </tr>
-
-    
         </tr>
     </table>
     <input type="submit" value="Fight!">
@@ -38,8 +36,8 @@
 {% else: %}
     <p>{{ s1.name }} shoots {{ s2.name }}</p>
     <form action="{{ url_for('shoot') }}" method=post>
-        <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
-        <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
+        <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
+        <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
         <table>
             <tr>
               <td><b>Shooter:</b></td> <td> {{ s1.name }}</td>
@@ -50,7 +48,7 @@
               <td><b>F:</b></td> <td><input type="number" id="F" name="F" min="-5" max="5" value={{ s2.F }}></td>
             </tr>
             <tr>  
-              <td><b>Weapon mod.:</b></td><td><input type="number" id="w1_m" name="w1_m" min="-5" max="5" value={{ sw1.damage_mod }}></td>
+              <td><b>Weapon mod.:</b></td><td><input type="number" id="w1_m" name="w1_m" min="-5" max="5" value={{ s1.swp_damage_mod }}></td>
               <td><b>Armour mod.:</b></td><td><input type="number" id="armour" name="armour" min="-5" max="20" value={{ s2.A }}></td>
             </tr>
             <tr>

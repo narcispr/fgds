@@ -10,6 +10,10 @@ from random import randrange
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+USER_ID = 'narcispr'
+db_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H', 
+             'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
+
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'frostgrave.db'),
     SECRET_KEY='secret_key',
@@ -43,47 +47,48 @@ def get_db():
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
-def get_members(team):
+def get_members(list):
     db = get_db()
-    cur = db.execute("SELECT * FROM minis WHERE team = {} AND H > 0".format(team))
+    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" AND H > 0".format(USER_ID, list))
     return cur.fetchall()
 
 def get_stats(id):
     db = get_db()
-    stats = None
-    combat_weapon = None
-    shoot_weapon = None
-    cur = db.execute("SELECT * FROM minis WHERE id = {}".format(id))
-    stats = cur.fetchall()[0]
-    if stats[7] != 0: # combat weapon 
-        cur = db.execute("SELECT * FROM weapons WHERE rowid = {}".format(stats[7]))
-        combat_weapon = cur.fetchall()[0]
-    if stats[8] != 0: # shoot weapon 
-        cur = db.execute("SELECT * FROM weapons WHERE rowid = {}".format(stats[8]))
-        shoot_weapon = cur.fetchall()[0]
-    return stats, combat_weapon, shoot_weapon
+    cur = db.execute("SELECT rowid, * FROM minis WHERE rowid={} AND user=\"{}\"".format(id, USER_ID))
+    
+    # col_name_list = [t[0] for t in cur.description]
+    # print(col_name_list)
+    
+    stats = cur.fetchall()
+    if len(stats) == 1:
+        return stats[0]
+    else:
+        print("Error retrieving min stats for id={} and user=\"{}\"".format(id, USER_ID))
+        return None
 
 @app.route('/')
 def hello():
-    minis_1 = get_members(1)
-    minis_2 = get_members(2)
+    minis_1 = get_members('initial')
+    minis_2 = get_members('initial')
     return render_template('select_minis.html', team1=minis_1, team2=minis_2)
     
     
 @app.route('/fight/', methods=['POST'])
 def fight():
-    s1, cw1, sw1 = get_stats(request.form['mini1'])
-    s2, cw2, sw2 = get_stats(request.form['mini2'])
-    combat_type = request.form['fight'] == 'combat'
+    s1 = get_stats(request.form.get('mini1'))
+    s2 = get_stats(request.form.get('mini2'))
+        
+    combat_type = request.form.get('fight') == 'combat'
     msg = ''
-    if not combat_type and sw1 is None:
-        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[1])
-    return render_template('fight.html', s1=s1, cw1=cw1, sw1=sw1, s2=s2, cw2=cw2, sw2=sw2, combat_type=combat_type, msg=msg)
+    if not combat_type and s1[db_fields.index('swp_range')] <= 0:
+        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[db_fields.index('ńame')])
+    
+    return render_template('fight.html', s1=s1, s2=s2, combat_type=combat_type, msg=msg)
     
 @app.route('/shoot/', methods=['POST'])
 def shoot():
-    s1, _, _ = get_stats(request.form['mini1'])
-    s2, _, _ = get_stats(request.form['mini2'])
+    s1 = get_stats(request.form['mini1'])
+    s2 = get_stats(request.form['mini2'])
     s_dice = randrange(20) + 1
     t_dice = randrange(20) + 1
     
@@ -110,17 +115,16 @@ def shoot():
         a_total = int(request.form.get('armour'))
         damage = max(d_total - a_total, 0)
     
-    health = int(s2[11])
+    health = int(s2[db_fields.index('H')])
     new_health = max(health - damage, 0)
-    kill = (new_health <= 0)
     
     return render_template('shoot_results.html', s1=s1, s2=s2, s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
                            health=health, new_health=new_health, w_mod=int(request.form.get('w1_m')), armour=int(request.form.get('armour')))
 
 @app.route('/combat/', methods=['POST'])
 def combat():
-    s1, _, _ = get_stats(request.form.get('mini1'))
-    s2, _, _ = get_stats(request.form.get('mini2'))
+    s1 = get_stats(request.form.get('mini1'))
+    s2 = get_stats(request.form.get('mini2'))
     p1_dice = randrange(20) + 1
     p2_dice = randrange(20) + 1
     
@@ -133,21 +137,17 @@ def combat():
     damage2 = 0
     winner = 0
     if (p1_dice + p1_mod) > (p2_dice + p2_mod):
-        print("p1 wins")
         damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
         winner = 1
     elif (p1_dice + p1_mod) < (p2_dice + p2_mod):
-        print("p2 wins")
         damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
         winner = 2
     else:
-        print("draw")
         damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
         damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
-    print("damage1: {}, damage2: {}".format(damage1, damage2))
     
-    health1 = int(s1[11])
-    health2 = int(s2[11])
+    health1 = int(s1[db_fields.index('H')])
+    health2 = int(s2[db_fields.index('H')])
     new_health1 = max(health1 - damage1, 0)
     new_health2 = max(health2 - damage2, 0)
     
@@ -160,7 +160,7 @@ def combat():
 
 def update_health(mini, new_health):
     db = get_db()
-    db.execute("UPDATE minis SET H = {} WHERE ID = {}".format(new_health, mini))
+    db.execute("UPDATE minis SET H = {} WHERE rowid = {} AND user = \"{}\"".format(new_health, mini, USER_ID))
     db.commit()
     
 @app.route('/apply_new_health/', methods=['POST'])

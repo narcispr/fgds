@@ -8,12 +8,14 @@
     <p>health: {{ health }} - {{ damage }} = {{ new_health }}</p>
     {% if new_health == 0 %}
         <p style="color:red">KILLED!</p>
-    {% endif %}    
+    {% endif %} 
+{% else %}
+    <p>No damage!</p>
 {% endif %}
 <form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
-    <input type="hidden" id="mini1" name="mini1" value={{ s1.ID }}>
+    <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
     <input type="hidden" id="health1" name="health1" value={{ s1.H }}>
-    <input type="hidden" id="mini2" name="mini2" value={{ s2.ID }}>
+    <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
     <input type="hidden" id="health2" name="health2" value={{ new_health }}>
     <input type="submit" value="Apply">
 </form>
