@@ -3,21 +3,18 @@
 
 <h2>Select players to fight:</h2>
 <form action="{{ url_for('fight') }}" method=post class=add-task>
-    <select id="team1" name="mini1">
-        {% for m in team1 %}
-            <option value="{{ m.rowid }}"> {{ m.name }}</option>
-        {% endfor %}
-    </select>
+    {{ mini.name }}
     VS.
-    <select id="team2" name="mini2">
-        {% for m in team2 %}
+    <select id="mini2" name="mini2">
+        {% for m in team %}
             <option value="{{ m.rowid }}"> {{ m.name }}</option>
         {% endfor %}
     </select>
 
-    <div>
-        <input type="radio" id="combat" name="fight" value="combat" checked>
-        <label for="combat">Combat</label><br>
+    <div class="fg">
+        <input type="hidden" id="mini1" name="mini1" value={{ mini.rowid }}>
+        <input type="radio" id="combat" name="fight" value="combat" checked> 
+        <label for="combat">Combat</label> &nbsp;
         <input type="radio" id="shoot" name="fight" value="shoot">
         <label for="shoot">Shoot</label><br>
     </div>

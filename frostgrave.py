@@ -11,6 +11,9 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 
 USER_ID = 'narcispr'
+COMBAT_LIST = 'initial'
+
+
 mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H', 
                'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
 spell_fields = ['rowid', 'mini_id', 'name', 'cast_value', 'description']
@@ -67,13 +70,13 @@ def get_stats(id):
         print("Error retrieving min stats for id={} and user=\"{}\"".format(id, USER_ID))
         return None
 
-@app.route('/')
-def hello():
-    minis_1 = get_members('initial')
-    minis_2 = get_members('initial')
-    return render_template('select_minis.html', team1=minis_1, team2=minis_2)
+@app.route('/fight_select/<int:mini>')
+def fight_select(mini):
+    team = get_members(COMBAT_LIST)
+    m = get_stats(mini)
+    return render_template('select_minis.html', mini=m, team=team)
 
-@app.route('/show')
+@app.route('/')
 def show():
     db = get_db()
     cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ".format(USER_ID))
@@ -280,7 +283,6 @@ def remove_spell(spell):
     db.commit()
     return redirect(url_for('show_spells', mini=mini_id))
 
-
 @app.route('/cast_spell/<int:spell>')
 def cast_spell(spell):
     s = get_spell(spell)
@@ -358,6 +360,18 @@ def edit_spell(spell):
     s = get_spell(spell)
     m = get_stats(s[spell_fields.index('mini_id')])
     return render_template('edit_spell.html', mini=m, spell=s)
+
+@app.route('/copy_mini/<int:mini>')
+def copy_mini(mini):
+    m = get_stats(mini)
+    for i in m:
+        print(i)
+    command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod) VALUES ({}, \"{}_copy\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {})".format(m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15], m[16])
+    print(command)
+    db = get_db()
+    db.execute(command)
+    db.commit()    
+    return redirect(url_for('show'))
 
 if __name__ == '__main__':
     app.run()

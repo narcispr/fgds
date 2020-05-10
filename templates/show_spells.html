@@ -3,15 +3,20 @@
 
 <h2>{{ mini.name}} Spells:</h2>
 
-<table style="width:80%">
+<table class="table_list">
 {% for s in spells %}
+    <tr class="gris">
+        <td><b>{{ s.name }}</b> ({{ s.cast_value }})</td>
+    </tr>
+    <tr> 
+        <td>{{ s.description }}</td> 
+    </tr>
     <tr>
-        <td>{{ s.name }}</td>
-        <td>Cast value: {{ s.cast_value }}</td>
-        <td>{{ s.description }}</td>
-        <td><a href="{{ url_for('cast_spell', spell=s.rowid)}}">Cast</a></td>
-        <td><a href="{{ url_for('edit_spell', spell=s.rowid)}}">Edit</a></td>
-        <td><a href="{{ url_for('remove_spell', spell=s.rowid)}}">Remove</a></td>
+        <td>
+            <a href="{{ url_for('cast_spell', spell=s.rowid)}}">Cast</a> &nbsp;
+            <a href="{{ url_for('edit_spell', spell=s.rowid)}}">Edit</a> &nbsp;
+            <a href="{{ url_for('remove_spell', spell=s.rowid)}}">Remove</a>
+        </td>
     </tr> 
 {% endfor %}
 </table>

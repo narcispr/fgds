@@ -13,7 +13,7 @@
         <label for="cost">Cost:</label> <input type="number" id="cost" name="cost" min="0" max="50" value={{ spell.cast_value}}>
         <br></br>
         <label for="description">Description:</label> <br></br>
-        <input type="textarea" id="description" name="description" value="{{ spell.description }}">
+        <textarea id="description" name="description" style="width: 80%; height:200px;">{{ spell.description }}</textarea>
         <br></br> 
     </div>
     <input type="submit" value="Update">

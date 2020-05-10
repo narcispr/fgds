@@ -3,56 +3,70 @@
 
 <h2>Edit/Add minis:</h2>
 
-<table style="width:80%">
-{% for m in minis %}
-    <tr>
-        <td>{{ m.name }}</td>
-        {% if m.type == 0%}
-            <td>Wizard</td>
-        {% elif m.type == 1%}
-            <td>Apprentice</td>
-        {% elif m.type == 2%}
-            <td>Soldier</td>
-        {% elif m.type == 3%}
-            <td>Monster</td>
-        {% else%}
-            <td>Other</td>
-        {% endif %}
-        <td>M: {{ m.M }}</td>
-        <td>F: {{ m.F }}</td>
-        <td>S: {{ m.S }}</td>
-        <td>A: {{ m.A }}</td>
-        <td>W: {{ m.W }}</td>
-        <td>H: {{ m.H }}</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>{{ m.cwp_name }}</td>
-        <td>Mod: {{ m.cwp_damage_mod }}</td>
-        <td>Armour: {{ m.cwp_armour_mod }}</td>
-        {% if m.swp_range > 0 %}
-            <td>{{ m.swp_name }}</td>
-            <td>R: {{ m.swp_range }}</td>
-            <td>Mod: {{ m.swp_damage_mod }}</td>
-        {% else %}
-            <td>None</td>
-            <td></td>
-            <td></td>    
-        {% endif %}
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><a href="{{ url_for('edit_mini', mini=m.rowid)}}">Edit</a></td>
-        <td><a href="{{ url_for('show_spells', mini=m.rowid)}}">Spells</a></td>
-        <td><a href="{{ url_for('resist_spell', mini=m.rowid)}}">Resist Spell</a></td>
-        <td>Skills</td>
-        <td><a href="{{ url_for('delete_mini', mini=m.rowid)}}">Remove</a></td>
-        
-    </tr> 
-    <tr></tr>
-{% endfor %}
-</table>
+    <table class="table_list">  
+    {% for m in minis %}
+        <tr class="gris">
+            <td><b>{{ m.name }}</b></td>
+            <td>
+                {% if m.type == 0%}
+                    Wizard
+                {% elif m.type == 1%}
+                    Apprentice
+                {% elif m.type == 2%}
+                    Soldier
+                {% elif m.type == 3%}
+                    Monster
+                {% endif %}
+                
+                &nbsp; M: {{ m.M }} &nbsp; F: {{ m.F }} &nbsp; S: {{ m.S }} &nbsp; A: {{ m.A }} &nbsp; W: {{ m.W }} &nbsp; H: {{ m.H }}
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                {% if m.type == 0%}
+                    <img src="static/wizard.png" width="80" height="100">
+                {% elif m.type == 1%}
+                    <img src="static/apprentice.png" width="80" height="100">
+                {% elif m.type == 2%}
+                    <img src="static/soldier.png" width="80" height="100">
+                {% elif m.type == 3%}
+                    <img src="static/monster.png" width="80" height="100">
+                {% endif %} 
+            </td>
+            <td><p>
+                <ul>
+                    <li>{{ m.cwp_name }} &nbsp;  
+                        {% if m.cwp_damage_mod >= 0%}
+                            +{{m.cwp_damage_mod}}
+                        {% else %}
+                            {{m.cwp_damage_mod}}
+                        {% endif %}
+                        {% if m.cwp_armour_mod != 0%}
+                            / {{m.cwp_armour_mod}} 
+                        {% endif %}
+                    </li>
+                    {% if m.swp_range > 0 %}
+                        <li>{{ m.swp_name }} &nbsp; 
+                            {% if m.swp_damage_mod >= 0%}
+                                +{{m.swp_damage_mod}} 
+                            {% else %}
+                                {{m.swp_damage_mod}}
+                            {% endif %}
+                            / {{m.swp_range}}"
+                        </li>
+                    {% endif %}
+                </ul></p>
+                <p> <a href="{{ url_for('fight_select', mini=m.rowid)}}">Fight</a> &nbsp;
+                    <a href="{{ url_for('show_spells', mini=m.rowid)}}">Spells</a> &nbsp;
+                    <a href="{{ url_for('resist_spell', mini=m.rowid)}}">Resist</a> &nbsp;
+                    <a href="{{ url_for('edit_mini', mini=m.rowid)}}">Edit</a> &nbsp;
+                    <a href="{{ url_for('copy_mini', mini=m.rowid)}}">Copy</a> &nbsp;
+                    <a href="{{ url_for('delete_mini', mini=m.rowid)}}">Remove</a> &nbsp;
+                </p>
+            </td>
+        </tr>     
+    {% endfor %}
+    </table>
 <a href="{{ url_for('add_mini')}}">Add</a>
 
 {% endblock %}>
