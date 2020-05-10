@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>Edit Spell {{ spell.name }}:</h2>
+
+<form action="{{ url_for('add_spell_to_mini') }}" method=post class=add-task>
+    <input type="hidden" id="add" name="add" value="0">
+    <input type="hidden" id="mini" name="mini" value={{ mini.rowid }}>
+    <input type="hidden" id="id" name="id" value={{ spell.rowid }}>
+    
+    <div style="width:80%">
+        <label for="name">Name:</label> <input type="text" id="name" name="name" value="{{ spell.name }}">
+        <label for="cost">Cost:</label> <input type="number" id="cost" name="cost" min="0" max="50" value={{ spell.cast_value}}>
+        <br></br>
+        <label for="description">Description:</label> <br></br>
+        <input type="textarea" id="description" name="description" value="{{ spell.description }}">
+        <br></br> 
+    </div>
+    <input type="submit" value="Update">
+</form>
+
+{% endblock %}

@@ -15,6 +15,6 @@
     </tr> 
 {% endfor %}
 </table>
-<a href="{{ url_for('add_spell') }}">Add</a>
+<a href="{{ url_for('add_spell', mini=mini.rowid) }}">Add</a>
 
 {% endblock %}>

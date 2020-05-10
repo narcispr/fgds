@@ -258,10 +258,6 @@ def resist_result():
     empowering = int(request.form.get('empowering'))
     update_health(mini_id, m[mini_fields.index('H')] - empowering)
     return redirect(url_for('show'))
-  
-@app.route('/edit_spell/<int:spell>')
-def edit_spell(spell):
-    return False
 
 def get_spell(spell):
     db = get_db()
@@ -305,9 +301,33 @@ def cast_spell(spell):
     print("Dice: {}, Cast: {}, damage: {}".format(dice, cast, damage))
     return render_template('cast_results.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage)
 
-@app.route('/add_spell/')
-def add_spell(spell):
-    return False
+@app.route('/add_spell/<int:mini>')
+def add_spell(mini):
+    m = get_stats(mini)
+    return render_template('add_spell.html', mini=m)
+
+@app.route('/add_spell_to_mini/', methods=['POST'])
+def add_spell_to_mini():
+    mini_id = int(request.form.get('mini'))
+    m = get_stats(mini_id)
+    a = request.form.get('add') == '1'
+    name = request.form.get('name')
+    cost = int(request.form.get('cost'))
+    description = request.form.get('description')
+    if a:
+        command = "INSERT INTO spells (mini_id, name, cast_value, description) VALUES ({}, \"{}\", {}, \"{}\")".format(mini_id, name, cost, description)
+    else:
+        spell_id = int(request.form.get('id'))
+        command = "UPDATE spells SET mini_id={}, name=\"{}\", cast_value={}, description=\"{}\" WHERE rowid = {}".format(mini_id, name, cost, description, spell_id)
+    
+    print(command)
+    db = get_db()
+    db.execute(command)
+    db.commit()
+    command = "SELECT spells.rowid, * FROM spells WHERE mini_id={}".format(mini_id)
+    cur = db.execute(command)
+    spells = cur.fetchall()
+    return render_template('show_spells.html', mini=m, spells=spells)
 
 @app.route('/empowering_spell/', methods=['POST'])
 def empowering_spell():
@@ -333,6 +353,11 @@ def empowering_spell():
     print("Dice: {}, Cast: {}, Empowering: {}, damage: {}".format(dice, cast, empowering, damage))
     return render_template('cast_empowered.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage, empowering=empowering)
 
+@app.route('/edit_spell/<int:spell>')
+def edit_spell(spell):
+    s = get_spell(spell)
+    m = get_stats(s[spell_fields.index('mini_id')])
+    return render_template('edit_spell.html', mini=m, spell=s)
 
 if __name__ == '__main__':
     app.run()
