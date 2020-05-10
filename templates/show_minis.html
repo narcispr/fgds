@@ -24,11 +24,7 @@
         <td>A: {{ m.A }}</td>
         <td>W: {{ m.W }}</td>
         <td>H: {{ m.H }}</td>
-        <td><a href="{{ url_for('edit_mini', mini=m.rowid)}}">Edit</a></td>
-        <td>        </td>
-        <td><a href="{{ url_for('delete_mini', mini=m.rowid)}}">Remove</a></td>
-        
-    </tr> 
+    </tr>
     <tr>
         <td></td>
         <td>{{ m.cwp_name }}</td>
@@ -39,13 +35,22 @@
             <td>R: {{ m.swp_range }}</td>
             <td>Mod: {{ m.swp_damage_mod }}</td>
         {% else %}
-            <td>No shooting weapon</td>
+            <td>None</td>
             <td></td>
             <td></td>    
         {% endif %}
         <td></td>
         <td></td>
     </tr>
+    <tr>
+        <td><a href="{{ url_for('edit_mini', mini=m.rowid)}}">Edit</a></td>
+        <td><a href="{{ url_for('show_spells', mini=m.rowid)}}">Cast Spells</a></td>
+        <td><a href="{{ url_for('resist_spell', mini=m.rowid)}}">Resist Spells</a></td>
+        <td>Skills</td>
+        <td><a href="{{ url_for('delete_mini', mini=m.rowid)}}">Remove</a></td>
+        
+    </tr> 
+    <tr></tr>
 {% endfor %}
 </table>
 <a href="{{ url_for('add_mini')}}">Add</a>

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>{{ spell.name }} cast:</h2>
+{% if cast %}
+    <p>Spell cast</p>
+    <p>{{ dice }} >= {{ spell.cast_value }}</p>
+    <p>{{ spell.description }}</p>
+{% else %}
+    <p>Spell cast fails</p>
+    <p>dice({{ dice }}) + empowering({{ empowering }}) < cast value({{ spell.cast_value }})</p>
+{% endif %}
+{% if damage > 0 %}
+        <p style="color:red">damage is {{ damage }}</p>
+        <form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
+            <input type="hidden" id="use_mini1" name="use_mini1" value="1">
+            <input type="hidden" id="mini1" name="mini1" value={{ mini.rowid }}>
+            <input type="hidden" id="health1" name="health1" value={{ mini.H - damage }}>
+            <input type="hidden" id="use_mini2" name="use_mini2" value="0">
+            <input type="hidden" id="mini2" name="mini2" value="0">
+            <input type="hidden" id="health2" name="health2" value="0">
+            <input type="submit" value="Apply">
+        </form>
+    {% endif %}
+{% endblock %}

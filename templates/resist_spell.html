@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+<body onload="resistSpell()">
+
+<h2>Resist Spell:</h2>
+<p>{{ mini.name }} ({{ mini.H }}) </p>
+
+
+<form action="{{ url_for('resist_result') }}" method=post class=add-task>
+    <input type="hidden" id="mini" name="mini" value={{ mini.rowid }}>
+    <table>
+        <tr>
+            <td><p>Dice( {{ dice }} )</p> </td><td><p> &nbsp; +  Will( {{ mini.W }} ) &nbsp;</p></td>
+            {% if mini.type == 0 or mini.type == 1%}
+                <td><p> + Empowering( </p></td><td><input onchange="resistSpell()" type="number" id="empowering" name="empowering" min="0" max={{ mini.H }} value=0></td><td><p> )</p></td>
+            {% else %}
+                <td><input type="hidden" id="empowering" name="empowering" value=0></td>
+            {% endif %}
+            <td><p> &nbsp; >= Cast Value( </p></td> <td><input onchange="resistSpell()" type="number" id="spell_cast" name="spell_cast" min="0" max=50 value=10></td><td><p> )</p></td>
+            <td>&nbsp; --> &nbsp;</td><td><p id="result"></p></td>
+        </tr>
+    </table>
+    <input type="submit" value="Apply">
+</form>
+
+<script>
+
+    function resistSpell() {
+        var cast_value = parseInt(document.getElementById("spell_cast").value);
+        var will = {{ mini.W }};
+        var dice = {{ dice }};
+        var empowering = 0;
+        var empowering_obj = document.getElementById("empowering");
+        if (empowering_obj != null) {
+            console.log("Is not null")
+            empowering = parseInt(empowering_obj.value);
+        } 
+        console.log("Value: ");
+        console.log(empowering);
+        
+        var resist = (will + dice + empowering) >= cast_value
+        if (resist) {
+            document.getElementById("result").innerHTML = "Resist Spell";
+        } else {
+            document.getElementById("result").innerHTML = "Do not resists the spell";
+        }
+    }
+
+</script>
+</body>
+
+{% endblock %}

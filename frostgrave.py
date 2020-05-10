@@ -11,8 +11,9 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 
 USER_ID = 'narcispr'
-db_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H', 
-             'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
+mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H', 
+               'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
+spell_fields = ['rowid', 'mini_id', 'name', 'cast_value', 'description']
 
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'frostgrave.db'),
@@ -78,7 +79,7 @@ def show():
     cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ".format(USER_ID))
     minis = cur.fetchall()
     return render_template('show_minis.html', minis=minis)
-    
+
 @app.route('/fight/', methods=['POST'])
 def fight():
     s1 = get_stats(request.form.get('mini1'))
@@ -86,8 +87,8 @@ def fight():
         
     combat_type = request.form.get('fight') == 'combat'
     msg = ''
-    if not combat_type and s1[db_fields.index('swp_range')] <= 0:
-        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[db_fields.index('ńame')])
+    if not combat_type and s1[mini_fields.index('swp_range')] <= 0:
+        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[mini_fields.index('ńame')])
     
     return render_template('fight.html', s1=s1, s2=s2, combat_type=combat_type, msg=msg)
     
@@ -121,7 +122,7 @@ def shoot():
         a_total = int(request.form.get('armour'))
         damage = max(d_total - a_total, 0)
     
-    health = int(s2[db_fields.index('H')])
+    health = int(s2[mini_fields.index('H')])
     new_health = max(health - damage, 0)
     
     return render_template('shoot_results.html', s1=s1, s2=s2, s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
@@ -152,8 +153,8 @@ def combat():
         damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
         damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
     
-    health1 = int(s1[db_fields.index('H')])
-    health2 = int(s2[db_fields.index('H')])
+    health1 = int(s1[mini_fields.index('H')])
+    health2 = int(s2[mini_fields.index('H')])
     new_health1 = max(health1 - damage1, 0)
     new_health2 = max(health2 - damage2, 0)
     
@@ -171,15 +172,19 @@ def update_health(mini, new_health):
     
 @app.route('/apply_new_health/', methods=['POST'])
 def apply_new_health():
-    mini1 = request.form.get('mini1')
-    mini2 = request.form.get('mini2')
-    health1 = request.form.get('health1')
-    health2 = request.form.get('health2')
-    print("mini {}: {}, mini {}: {}".format(mini1, health1, mini2, health2))
-    update_health(int(mini1), int(health1))
-    update_health(int(mini2), int(health2))
+    use_mini1 = request.form.get('use_mini1')
+    if use_mini1 == '1':
+        mini1 = request.form.get('mini1')
+        health1 = request.form.get('health1')
+        update_health(int(mini1), max(int(health1), 0))
     
-    return redirect(url_for('hello'))
+    use_mini2 = request.form.get('use_mini2')
+    if use_mini2 == '1':
+        mini2 = request.form.get('mini2')
+        health2 = request.form.get('health2')
+        update_health(int(mini2), max(int(health2), 0))
+    
+    return redirect(url_for('show'))
 
 
 @app.route('/delete_mini/<int:mini>')
@@ -230,6 +235,104 @@ def add():
     db.commit()
     
     return redirect(url_for('show'))
+
+@app.route('/show_spells/<int:mini>')
+def show_spells(mini):
+    db = get_db()
+    command = "SELECT spells.rowid, * FROM spells WHERE mini_id={}".format(mini)
+    cur = db.execute(command)
+    spells = cur.fetchall()
+    stats = get_stats(mini)
+    return render_template('show_spells.html', mini=stats, spells=spells)
+
+@app.route('/resist_spell/<int:mini>')
+def resist_spell(mini):
+    m = get_stats(mini)
+    dice = randrange(20) + 1
+    return render_template('resist_spell.html', mini=m, dice=dice)
+
+@app.route('/resist_result/', methods=['POST'])
+def resist_result():
+    mini_id = int(request.form.get('mini'))
+    m = get_stats(mini_id)
+    empowering = int(request.form.get('empowering'))
+    update_health(mini_id, m[mini_fields.index('H')] - empowering)
+    return redirect(url_for('show'))
+  
+@app.route('/edit_spell/<int:spell>')
+def edit_spell(spell):
+    return False
+
+def get_spell(spell):
+    db = get_db()
+    cur = db.execute("SELECT rowid, * FROM spells WHERE rowid={}".format(spell))
+    spell = cur.fetchall()
+    if len(spell) == 1:
+        return spell[0]
+    else:
+        print("Error retrieving spell for id={} and user=\"{}\"".format(spell, USER_ID))
+        return None
+
+@app.route('/remove_spell/<int:spell>')
+def remove_spell(spell):
+    s = get_spell(spell)
+    mini_id = s[spell_fields.index('mini_id')]
+    db = get_db()
+    command = "DELETE FROM spells WHERE rowid = {}".format(spell)
+    print(command)
+    db.execute(command)
+    db.commit()
+    return redirect(url_for('show_spells', mini=mini_id))
+
+
+@app.route('/cast_spell/<int:spell>')
+def cast_spell(spell):
+    s = get_spell(spell)
+    m = get_stats(s[spell_fields.index('mini_id')])
+    dice = randrange(20) + 1
+    diff = s[spell_fields.index('cast_value')] - dice
+    cast = False
+    if diff <= 0:
+        cast = True
+    damage = 0
+    if not cast:
+        if diff > 4 and diff <= 9:
+            damage = 1
+        elif diff > 9 and diff <= 19:
+            damage = 2
+        elif diff > 20:
+            damage = 5
+    print("Dice: {}, Cast: {}, damage: {}".format(dice, cast, damage))
+    return render_template('cast_results.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage)
+
+@app.route('/add_spell/')
+def add_spell(spell):
+    return False
+
+@app.route('/empowering_spell/', methods=['POST'])
+def empowering_spell():
+    spell_id = int(request.form.get('spell'))
+    empowering = int(request.form.get('empowering'))
+    dice = int(request.form.get('dice'))
+    s = get_spell(spell_id)
+    mini_id = s[spell_fields.index('mini_id')]
+    m = get_stats(mini_id)
+
+    diff = s[spell_fields.index('cast_value')] - dice - empowering
+    cast = False
+    if diff <= 0:
+        cast = True
+    damage = empowering
+    if not cast:
+        if diff > 4 and diff <= 9:
+            damage += 1
+        elif diff > 9 and diff <= 19:
+            damage += 2
+        elif diff > 20:
+            damage += 5
+    print("Dice: {}, Cast: {}, Empowering: {}, damage: {}".format(dice, cast, empowering, damage))
+    return render_template('cast_empowered.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage, empowering=empowering)
+
 
 if __name__ == '__main__':
     app.run()
