@@ -74,14 +74,14 @@ function draw() {
 
 	// Increment the angle of the needle by 5 degrees until max
 	if (counter <= limit){
-		degrees += 2;
-		counter += 2;
+		degrees += 20;
+		counter += 20;
 	}
 }
 
 function imgLoaded() {
 	// Image loaded event complete.  Start the timer
-	var compas_int = setInterval(draw, 4);
+	var compas_int = setInterval(draw, 50);
 }
 
 function init() {
