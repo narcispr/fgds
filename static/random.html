@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Random generators</title>
+    </head>
+    <script src='random.js'></script>
+    <body onload='init();'>
+        <table style="border: 1px solid black;">
+            <tr>
+                <th>Dice Roll</th><th>Initiative</th><th>Random Course</th>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <th>d2</th><td><p id="d2">0</p></td>
+                        </tr>
+                        <tr>
+                            <th>d6</th><td><p id="d6">0</p></td>
+                        </tr>
+                        <tr>
+                            <th>d20</th><td><p id="d20">0</p></td>
+                        </tr>
+                        <tr>
+                            <th>d <input type="number" id="dx_input" min="1" max="100" value="0"></th><td><p id="dx">0</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table style="border: 1px solid black;">
+                        <tr style="border: 1px solid black;">
+                            <th><p>Player</p></th> 
+                            <th><p style="text-align:right">Dice</p></th>
+                        </tr>
+                        <tr>
+                            <td><p id="p1_name">Player 1</p></td>
+                            <td><p id="p1_dice" style="text-align:right">0</p></td>
+                        </tr>
+                        <tr style="border: 1px solid black;">
+                            <td><p id="p2_name">Player 2</p></td>
+                            <td><p id="p2_dice" style="text-align:right">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p id="p3_name">Player 3</p></td>
+                            <td><p id="p3_dice" style="text-align:right">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p id="p4_name">Player 4</p></td>
+                            <td><p id="p4_dice" style="text-align:right">0</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <canvas id="compass" width="200" height="200"> </canvas> <br> 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="dice()">Roll Dices</button> 
+                </td>
+                <td>
+                    <button onclick="initiative()">Initiative</button>
+                </td>
+                <td>
+                    <button onclick="moveCompass()">Move</button>
+                </td>
+            </tr>
+        </table>
+	</body>
+</html>
