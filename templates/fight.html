@@ -10,31 +10,36 @@
         <form action="{{ url_for('combat') }}" method=post>
             <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
             <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
-            <table class="fg2">
+            <table class="fg">
                 <tr class="gris">
-                    <td><b>{{ s1.name }}</b> ({{ s1.H }})</td> 
-                    <td>&nbsp;&nbsp;</td>
-                    <td><b>{{ s2.name }}</b> ({{ s2.H }})</td>
+                    <th>{{ s1.name }} ({{ s1.H }})</th> 
+                    <th>&nbsp;&nbsp;</th>
+                    <th>{{ s2.name }} ({{ s2.H }})</th>
+                    <th>&nbsp;&nbsp;</th>
                 </tr>
-                <tr class="fg3">
-                    <td>F: <input type="number" id="F1" name="F1" min="-5" max="5" value={{ s1.F }}></td> 
-                    <td>&nbsp;&nbsp;</td>
-                    <td>F: <input type="number" id="F2" name="F2" min="-5" max="5" value={{ s2.F }}></td>
+                <tr class="fg2">
+                    <td>F:</td>
+                    <td><input type="number" id="F1" name="F1" min="-5" max="5" value={{ s1.F }}></td> 
+                    <td>F:</td>
+                    <td><input type="number" id="F2" name="F2" min="-5" max="5" value={{ s2.F }}></td>
                 </tr>
-                <tr class="fg3">
-                    <td>Supporters: <input type="number" id="sup1" name="sup1" min="0" max="10" value="0"> </td>
-                    <td>&nbsp;&nbsp;</td>
-                    <td>Supporters: <input type="number" id="sup2" name="sup2" min="0" max="10" value="0"> </td>
+                <tr class="fg2">
+                    <td>Supporters:</td>
+                    <td><input type="number" id="sup1" name="sup1" min="0" max="10" value="0"> </td>
+                    <td>Supporters:</td>
+                    <td><input type="number" id="sup2" name="sup2" min="0" max="10" value="0"> </td>
                 </tr>
-                <tr class="fg3">
-                    <td>Weapon Mod.: <input type="number" id="wp1" name="wp1" min="-5" max="5" value={{ s1.cwp_damage_mod }}> </td>
-                    <td>&nbsp;&nbsp;</td>
-                    <td>Weapon Mod.: <input type="number" id="wp2" name="wp2" min="-5" max="5" value={{ s2.cwp_damage_mod }}> </td>
+                <tr class="fg2">
+                    <td>Weapon Mod.:</td>
+                    <td><input type="number" id="wp1" name="wp1" min="-5" max="5" value={{ s1.cwp_damage_mod }}> </td>
+                    <td>Weapon Mod.:</td>
+                    <td><input type="number" id="wp2" name="wp2" min="-5" max="5" value={{ s2.cwp_damage_mod }}> </td>
                 </tr>
-                <tr class="fg3">
-                    <td>Armour: <input type="number" id="a1" name="a1" min="-5" max="20" value={{ s1.A - s1.cwp_armour_mod }}> </td>
-                    <td>&nbsp;&nbsp;</td>
-                    <td>Armour: <input type="number" id="a2" name="a2" min="-5" max="20" value={{ s2.A - s2.cwp_armour_mod }}> </td>
+                <tr class="fg2">
+                    <td>Armour:</td>
+                    <td><input type="number" id="a1" name="a1" min="-5" max="20" value={{ s1.A - s1.cwp_armour_mod }}> </td>
+                    <td>Armour:</td>
+                    <td><input type="number" id="a2" name="a2" min="-5" max="20" value={{ s2.A - s2.cwp_armour_mod }}> </td>
                 </tr>
             </table>
             <input type="submit" value="Fight!">
@@ -45,48 +50,42 @@
     <form action="{{ url_for('shoot') }}" method=post>
         <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
         <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
-        <table>
-            <tr class="fg3">
-              <td><b>Shooter:</b></td> <td> {{ s1.name }}</td>
-              <td><b>Target:</b></td> <td>{{ s2.name }}</td>
+        <table class="fg">
+            <tr class="gris">
+                <th>{{ s1.name }} ({{ s1.H }})</th> 
+                <th>&nbsp;&nbsp;</th>
+                <th>{{ s2.name }} ({{ s2.H }})</th>
+                <th>&nbsp;&nbsp;</th>
             </tr>
-            <tr class="fg3">
-              <td><b>S:</b></td> <td><input type="number" id="S" name="S" min="-5" max="5" value={{ s1.S }}></td>
-              <td><b>F:</b></td> <td><input type="number" id="F" name="F" min="-5" max="5" value={{ s2.F }}></td>
+            <tr class="fg2">
+              <td>S:</td> 
+              <td><input type="number" id="S" name="S" min="-5" max="5" value={{ s1.S }}></td>
+              <td>F:</td> 
+              <td><input type="number" id="F" name="F" min="-5" max="5" value={{ s2.F }}></td>
             </tr>
-            <tr class="fg3">  
-              <td><b>Weapon mod.:</b></td><td><input type="number" id="w1_m" name="w1_m" min="-5" max="5" value={{ s1.swp_damage_mod }}></td>
-              <td><b>Armour mod.:</b></td><td><input type="number" id="armour" name="armour" min="-5" max="20" value={{ s2.A }}></td>
+            <tr class="fg2">  
+              <td>Weapon mod.:</td>
+              <td><input type="number" id="w1_m" name="w1_m" min="-5" max="5" value={{ s1.swp_damage_mod }}></td>
+              <td>Armour mod.:</td>
+              <td><input type="number" id="armour" name="armour" min="-5" max="20" value={{ s2.A }}></td>
             </tr>
-            <tr class="fg3">
-                <td>Intervining terrain:</td> <td><input type="number" id="IT" name="IT" min="0" max="20" value="0"></td>
+            <tr class="fg2">
+                <td>Intervining terrain:</td> 
+                <td><input type="number" id="IT" name="IT" min="0" max="20" value="0"></td>
             </tr>
-            <tr class="fg3">
+            <tr class="fg2">
                 <td>Cover: </td> 
-                <td>
-                    <input type="radio" id="c_none" value="c_none" name="cover" checked>
-                    <label for="c_none">None</label>
-                </td>
-                <td>
-                    <input type="radio" id="c_light" value="c_light" name="cover">
-                    <label for="c_light">Light</label>
-                </td>
-                <td>
-                    <input type="radio" id="c_heavy" value="c_heavy" name="cover">
-                    <label for="c_heavy">Heavy</label>
-                </td>
+                <td><input type="radio" id="c_none" value="c_none" name="cover" checked> None</td>
+                <td><input type="radio" id="c_light" value="c_light" name="cover"> Light </td>
+                <td><input type="radio" id="c_heavy" value="c_heavy" name="cover"> Heavy</td>
             </tr>
-            <tr class="fg3">
+            <tr class="fg2">
                 <td>Hasty Shoot</td>
-                <td>
-                    <input type="checkbox" id="hasty" name="hasty" value="hasty">
-                </td>
+                <td><input type="checkbox" id="hasty" name="hasty" value="hasty"></td>
             </tr>
-            <tr class="fg3">
+            <tr class="fg2">
                 <td>Large Target</td>
-                <td>
-                    <input type="checkbox" id="large" name="large" value="large">
-                </td>
+                <td><input type="checkbox" id="large" name="large" value="large"></td>
             </tr>
         </table>
         <input type="submit" value="Shoot!">

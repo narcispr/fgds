@@ -144,11 +144,29 @@ th, td {
 }
 
 .fg2 {
-    border: 1px solid gray;
     margin: 10px;
+    border-bottom: 1px;
 }
 
 .fg3 {
     border-bottom: 1px solid gray;
     margin: 10px;
 }
+
+.almig {
+    text-align: center; 
+    vertical-align: middle;
+}
+
+.button:hover,
+.button {
+    font: 17px Helvetica;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: #333333;
+    padding: 4px 10px 4px 10px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+  }

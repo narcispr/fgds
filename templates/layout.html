@@ -5,7 +5,7 @@
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 
 <div class=page>
-    <p><a href="{{ url_for('show') }}">Main</a> | Config</p>
+    <p><a href="{{ url_for('show') }}">Main</a> | <a href="{{ url_for('random') }}">Random</a> | Config</p>
     <div class="title">
         <h1>FG Calculator</h1>
         {% for message in get_flashed_messages() %}

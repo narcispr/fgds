@@ -84,7 +84,8 @@ function imgLoaded() {
 	var compas_int = setInterval(draw, 50);
 }
 
-function init() {
+function init_compas() {
+	console.log('Init compass!');
 	// Grab the compass element
 	var canvas = document.getElementById('compass');
 
@@ -94,11 +95,11 @@ function init() {
 
 		// Load the needle image
 		needle = new Image();
-		needle.src = 'needle.png';
+		needle.src = '../static/needle.png';
 
 		// Load the compass image
 		img = new Image();
-		img.src = 'compass.png';
+		img.src = '../static/compass.png';
 		img.onload = imgLoaded;
 	} else {
 		alert("Canvas not supported!");

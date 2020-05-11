@@ -2,16 +2,39 @@
 {% block body %}
 
 <h2>Shoot resuts:</h2>
-<p>{{ s1.name }} Vs. {{ s2.name }}</p>
-<p>[{{ s_dice }}] + {{ s_mod }} Vs. [{{ t_dice }}] + {{ t_mod }}</p>
+<table class="fg2">
+    <tr class="gris">
+        <th class="fg2">{{ s1.name }}</th>
+        <th>&nbsp;&nbsp;</th>
+        <th class="fg2">{{ s2.name }}</th>
+    </tr>
+    <tr>
+        <td class="fg2">dice({{ s_dice }}) + mod({{ s_mod }})</td>
+        <td></td>
+        <td class="fg2">dice({{ t_dice }}) + mod({{ t_mod }})</td>
+    </tr>
+</table>
+{% if s_dice + s_mod > t_dice + t_mod %}
+    <p><b>Hit!</b></p>
+{% endif %}
+
 {% if damage > 0 %}
-    <p>damage: {{ s_dice }} + {{ s_mod }} + {{w_mod }} - {{ armour }} = {{ damage }}</p>
-    <p>health: {{ health }} - {{ damage }} = {{ new_health }}</p>
+    <ul>
+        <li>
+            <b>damage:</b> dice({{ s_dice }}) + mod({{ s_mod }}) + weapon_mod({{w_mod }}) - armour({{ armour }}) = <b>{{ damage }}</b>
+        </li>
+        <li>
+            <b>health:</b> {{ health }} - {{ damage }} = <b>{{ new_health }}</b>
+        </li>
+    </ul>
+    
     {% if new_health == 0 %}
-        <p style="color:red">KILLED!</p>
+        <p style="color:red"><b>{{ s2.name }} KILLED!</b></p>
     {% endif %} 
 {% else %}
-    <p>No damage!</p>
+    <ul>
+        <li><b>No damage!</b></li>
+    </ul>
 {% endif %}
 <form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
     <input type="hidden" id="use_mini1" name="use_mini1" value="0">

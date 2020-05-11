@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <script src='../static/random.js'></script>
+    <body onload='init_compas();'>
+        <table class="fg">
+            <tr>
+                <td>
+                    <table class="fg3">
+                        <tr>
+                            <th>Dice</th>
+                            <th>Roll</th>
+                        </tr>
+                        <tr>
+                            <td><p>d2</p></td>
+                            <td><p id="d2">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p>d6</p></td>
+                            <td><p id="d6">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p>d20</p></td>
+                            <td><p id="d20">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p>d <input type="number" size="4" id="dx_input" min="1" max="100" value="0"></p></td>
+                            <td><p id="dx">0</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="fg3">
+                        <tr>
+                            <th>Initiative</th> 
+                            <th>Roll</th>
+                        </tr>
+                        <tr>
+                            <td><p id="p1_name">Player 1</p></td>
+                            <td><p id="p1_dice">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p id="p2_name">Player 2</p></td>
+                            <td><p id="p2_dice">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p id="p3_name">Player 3</p></td>
+                            <td><p id="p3_dice">0</p></td>
+                        </tr>
+                        <tr>
+                            <td><p id="p4_name">Player 4</p></td>
+                            <td><p id="p4_dice">0</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <canvas id="compass" width="200" height="200"> </canvas> <br> 
+                </td>
+            </tr>
+            <tr>
+                <td class="almig">
+                    <button onclick="dice()">Roll Dices</button>
+                </td>
+                <td class="almig">
+                    <button onclick="initiative()">Roll Initiative</button>
+                </td>
+                <td class="almig">
+                    <button onclick="moveCompass()">Random Course</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+    
+{% endblock %}

@@ -373,5 +373,10 @@ def copy_mini(mini):
     db.commit()    
     return redirect(url_for('show'))
 
+@app.route('/random/')
+def random():
+    return render_template('random.html')
+
+
 if __name__ == '__main__':
     app.run()
