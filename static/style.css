@@ -170,12 +170,17 @@ th, td {
     border-left: 1px solid #CCCCCC;
   }
 
-  .name_wrap {
+  .name_wrap2 {
       white-space: nowrap; 
       text-overflow:ellipsis; 
       overflow: hidden; 
       max-width:1px;
   }
+
+  .name_wrap {
+    white-space: nowrap; 
+}
+
 
   .inner {
     display: table;
