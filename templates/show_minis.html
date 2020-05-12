@@ -3,7 +3,7 @@
 
 <h2>Edit/Add minis:</h2>
 
-    <table class="table_list">  
+    <table class="table_list">
     {% for m in minis %}
         <tr class="gris">
             <td><b>{{ m.name }}</b></td>
@@ -17,38 +17,38 @@
                 {% elif m.type == 3%}
                     Monster
                 {% endif %}
-                
+
                 &nbsp; M: {{ m.M }} &nbsp; F: {{ m.F }} &nbsp; S: {{ m.S }} &nbsp; A: {{ m.A }} &nbsp; W: {{ m.W }} &nbsp; H: {{ m.H }}
             </td>
         </tr>
         <tr>
-            <td> 
+            <td>
                 {% if m.type == 0%}
-                    <img src="static/wizard.png" width="80" height="100">
+                    <img src="static/wizard.png" width="60" height="75">
                 {% elif m.type == 1%}
-                    <img src="static/apprentice.png" width="80" height="100">
+                    <img src="static/apprentice.png" width="60" height="75">
                 {% elif m.type == 2%}
-                    <img src="static/soldier.png" width="80" height="100">
+                    <img src="static/soldier.png" width="60" height="75">
                 {% elif m.type == 3%}
-                    <img src="static/monster.png" width="80" height="100">
-                {% endif %} 
+                    <img src="static/monster.png" width="60" height="75">
+                {% endif %}
             </td>
             <td><p>
                 <ul>
-                    <li>{{ m.cwp_name }} &nbsp;  
+                    <li>{{ m.cwp_name }} &nbsp;
                         {% if m.cwp_damage_mod >= 0%}
                             +{{m.cwp_damage_mod}}
                         {% else %}
                             {{m.cwp_damage_mod}}
                         {% endif %}
                         {% if m.cwp_armour_mod != 0%}
-                            / {{m.cwp_armour_mod}} 
+                            / {{m.cwp_armour_mod}}
                         {% endif %}
                     </li>
                     {% if m.swp_range > 0 %}
-                        <li>{{ m.swp_name }} &nbsp; 
+                        <li>{{ m.swp_name }} &nbsp;
                             {% if m.swp_damage_mod >= 0%}
-                                +{{m.swp_damage_mod}} 
+                                +{{m.swp_damage_mod}}
                             {% else %}
                                 {{m.swp_damage_mod}}
                             {% endif %}
@@ -64,7 +64,7 @@
                     <a href="{{ url_for('delete_mini', mini=m.rowid)}}">Remove</a> &nbsp;
                 </p>
             </td>
-        </tr>     
+        </tr>
     {% endfor %}
     </table>
 <a class="button" href="{{ url_for('add_mini')}}">Add New Mini</a>

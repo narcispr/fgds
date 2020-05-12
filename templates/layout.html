@@ -1,16 +1,41 @@
-<!doctype html>
-<title>FG Calculator!</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 
-<div class=page>
-    <p><a href="{{ url_for('show') }}">Main</a> | <a href="{{ url_for('random') }}">Random</a> | Config</p>
-    <div class="title">
-        <h1>FG Calculator</h1>
-        {% for message in get_flashed_messages() %}
-            <div class=flash>{{ message }}</div>
-        {% endfor %}
-     </div>
-    {% block body %}{% endblock %}
-</div>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body style="font-size:14px">
+    <div class="container">
+      <div class="row">
+        <div class=page>
+          <p><a href="{{ url_for('show') }}">Main</a> | <a href="{{ url_for('random') }}">Random</a> | Config</p>
+          <div class="title">
+            <h1>FG Calculator</h1>
+            {% for message in get_flashed_messages() %}
+              <div class=flash>{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% block body %}{% endblock %}
+        </div>
+      </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  </body>
+</html>
