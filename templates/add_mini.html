@@ -13,8 +13,8 @@
             <option value=2>Soldier</option>
             <option value=3>Monster</option>
         </select>
-        <label for="name">Name:</label> <input type="text" id="name" name="name">
-        <label for="list">List:</label> <input type="text" id="list" name="list">
+        <label for="name">Name:</label> <input type="text" id="name" maxlength="16" name="name">
+        <label for="list">List:</label> <input type="text" id="list" maxlength="16" name="list">
         <br></br>
         <label for="M">M:</label> <input type="number" id="M" name="M" min="0" max="20" value=6>
         <label for="F">F:</label> <input type="number" id="F" name="F" min="-5" max="5" value=0>
@@ -23,11 +23,11 @@
         <label for="W">W:</label> <input type="number" id="W" name="W" min="0" max="20" value=0>
         <label for="H">H:</label> <input type="number" id="H" name="H" min="0" max="30" value=10>
         <br></br>
-        <label for="cwp_name">Combat weapon:</label> <input type="text" id="cwp_name" name="cwp_name" value="">
+        <label for="cwp_name">Combat weapon:</label> <input type="text" id="cwp_name" maxlength="16" name="cwp_name" value="">
         <label for="cwp_damage_mod">Damage mod.:</label> <input type="number" id="cwp_damage_mod" name="cwp_damage_mod" min="-5" max="5" value=0>
         <label for="cwp_armour_mod">Armour mod.:</label> <input type="number" id="cwp_armour_mod" name="cwp_armour_mod" min="-5" max="5" value=0>
         <br></br>
-        <label for="swp_name">Shoot weapon:</label> <input type="text" id="swp_name" name="swp_name" value="">
+        <label for="swp_name">Shoot weapon:</label> <input type="text" id="swp_name" maxlength="16" name="swp_name" value="">
         <label for="swp_range">Range:</label> <input type="number" id="swp_range" name="swp_range" min="0" max="48" value=0>
         <label for="swp_damage_mod">Damage mod.:</label> <input type="number" id="swp_damage_mod" name="swp_damage_mod" min="-5" max="5" value=0>
         <br></br> 

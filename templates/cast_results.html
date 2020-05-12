@@ -1,16 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h2>{{ spell.name }} cast:</h2>
+<h2>{{ mini.name }} ({{ mini.H }}) casts {{ spell.name }}:</h2>
 {% if cast %}
-    <p>Spell cast</p>
+    <p><b>Spell cast</b></p>
     <p>{{ dice }} >= {{ spell.cast_value }}</p>
-    <p>{{ spell.description }}</p>
+    <p><i>{{ spell.description }}</i></p>
 {% else %}
-    <p>Spell cast fails</p>
+    <p><b>Spell cast fails</b></p>
     <p>dice({{ dice }}) < cast value({{ spell.cast_value }})</p>
     {% if damage > 0 %}
-        <p style="color:red">damage is {{ damage }}</p>
+        <p style="color:red"><b>damage is {{ damage }}</b></p>
         <form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
             <input type="hidden" id="use_mini1" name="use_mini1" value="1">
             <input type="hidden" id="mini1" name="mini1" value={{ mini.rowid }}>

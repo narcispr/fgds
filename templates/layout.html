@@ -24,12 +24,14 @@
         <div class=page>
           <p><a href="{{ url_for('show') }}">Main</a> | <a href="{{ url_for('random') }}">Random</a> | Config</p>
           <div class="title">
-            <h1>FG Calculator</h1>
+            <h1>FG Digital Sheets</h1>
             {% for message in get_flashed_messages() %}
               <div class=flash>{{ message }}</div>
             {% endfor %}
           </div>
-          {% block body %}{% endblock %}
+          <div id="dynamic_content" class="inner">
+            {% block body %}{% endblock %}
+          </div>
         </div>
       </div>
     </div>

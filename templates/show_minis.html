@@ -6,7 +6,7 @@
     <table class="table_list">
     {% for m in minis %}
         <tr class="gris">
-            <td><b>{{ m.name }}</b></td>
+            <td class="name_wrap"><b>{{ m.name }}</b></td>
             <td>
                 {% if m.type == 0%}
                     Wizard
@@ -67,6 +67,8 @@
         </tr>
     {% endfor %}
     </table>
-<a class="button" href="{{ url_for('add_mini')}}">Add New Mini</a>
+    <form action="{{ url_for('add_mini') }}">
+        <input type="submit" value="Add New Mini">
+    </form>
 
 {% endblock %}>

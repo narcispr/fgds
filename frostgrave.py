@@ -303,9 +303,9 @@ def cast_spell(spell):
     print("Dice: {}, Cast: {}, damage: {}".format(dice, cast, damage))
     return render_template('cast_results.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage)
 
-@app.route('/add_spell/<int:mini>')
-def add_spell(mini):
-    m = get_stats(mini)
+@app.route('/add_spell/', methods=['POST'])
+def add_spell():
+    m = get_stats(request.form.get('mini1'))
     return render_template('add_spell.html', mini=m)
 
 @app.route('/add_spell_to_mini/', methods=['POST'])

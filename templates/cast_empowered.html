@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h2>{{ spell.name }} cast:</h2>
+<h2>{{ mini.name }} ({{ mini.H }}) casts {{ spell.name }}:</h2>
 {% if cast %}
-    <p>Spell cast</p>
-    <p>{{ dice }} >= {{ spell.cast_value }}</p>
-    <p>{{ spell.description }}</p>
+    <p><b>Spell cast</b></p>
+    <p>dice({{ dice }}) >= cast_value({{ spell.cast_value }})</p>
+    <p><i>{{ spell.description }}</i></p>
 {% else %}
-    <p>Spell cast fails</p>
+    <p><b>Spell cast fails</b></p>
     <p>dice({{ dice }}) + empowering({{ empowering }}) < cast value({{ spell.cast_value }})</p>
 {% endif %}
 {% if damage > 0 %}

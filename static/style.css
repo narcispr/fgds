@@ -169,3 +169,15 @@ th, td {
     border-bottom: 1px solid #333333;
     border-left: 1px solid #CCCCCC;
   }
+
+  .name_wrap {
+      white-space: nowrap; 
+      text-overflow:ellipsis; 
+      overflow: hidden; 
+      max-width:1px;
+  }
+
+  .inner {
+    display: table;
+    margin: 0 auto;
+  }
