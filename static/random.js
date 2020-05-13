@@ -5,6 +5,7 @@ var img = null,
 	degrees = 0;
 	counter = 0;
 	limit = 0;
+	compas_int = null;
 
 function dice() {
     var d2 = Math.floor(Math.random() * 2) + 1;
@@ -41,6 +42,7 @@ function getD20NotInValues(values) {
 }
 
 function moveCompass() {
+	startAnimation();
 	counter = 0;
 	limit = 360 + Math.floor(Math.random() * 359);
 }
@@ -74,18 +76,21 @@ function draw() {
 
 	// Increment the angle of the needle by 5 degrees until max
 	if (counter <= limit){
-		degrees += 20;
-		counter += 20;
+		degrees += 2;
+		counter += 2;
+	}
+	if ((counter > limit) && (limit > 0)){
+		clearTimeout(compas_int);
 	}
 }
 
-function imgLoaded() {
+function startAnimation() {
 	// Image loaded event complete.  Start the timer
-	var compas_int = setInterval(draw, 50);
+	clearTimeout(compas_int);
+	compas_int = setInterval(draw, 5);
 }
 
-function init_compas() {
-	console.log('Init compass!');
+function init_compass() {
 	// Grab the compass element
 	var canvas = document.getElementById('compass');
 
@@ -100,7 +105,8 @@ function init_compas() {
 		// Load the compass image
 		img = new Image();
 		img.src = '../static/compass.png';
-		img.onload = imgLoaded;
+		img.onload = draw;
+		
 	} else {
 		alert("Canvas not supported!");
 	}

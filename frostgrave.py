@@ -79,7 +79,7 @@ def fight_select(mini):
 @app.route('/')
 def show():
     db = get_db()
-    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ".format(USER_ID))
+    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
     minis = cur.fetchall()
     return render_template('show_minis.html', minis=minis)
 
