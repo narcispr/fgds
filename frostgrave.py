@@ -51,9 +51,12 @@ def get_db():
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
-def get_members(list):
+def get_members(list=None):
     db = get_db()
-    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" AND H > 0".format(USER_ID, list))
+    if list is None:
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND H > 0 ORDER BY name".format(USER_ID))
+    else:
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" AND H > 0 ORDER BY name".format(USER_ID, list))
     return cur.fetchall()
 
 def get_stats(id):
@@ -72,7 +75,10 @@ def get_stats(id):
 
 @app.route('/fight_select/<int:mini>')
 def fight_select(mini):
-    team = get_members(COMBAT_LIST)
+    if 'list_name' in session:
+        team = get_members(session['list_name'])
+    else:
+        team = get_members()
     m = get_stats(mini)
     return render_template('select_minis.html', mini=m, team=team)
 
@@ -87,7 +93,10 @@ def show_post(list_name=None):
 
     list_n = request.form.get('list_n')
     if list_n == '__all__':
-        del session['list_name']
+        try:
+            del session['list_name']
+        except:
+            pass
         cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
     else:
         session['list_name'] = list_n
