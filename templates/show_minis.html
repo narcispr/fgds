@@ -3,6 +3,21 @@
 
 <h2>Edit/Add minis:</h2>
 
+    <form action="{{ url_for('show_post') }}" method=post>
+        <b>List name: </b>
+        <select id="list_n" name="list_n">
+            <option value = "__all__" selected>All</option>
+            {% for l in list_names %}
+                {% if l == active_list %}
+                    <option value="{{ l }}" selected> {{ l }}</option>
+                {% else %}
+                    <option value="{{ l }}"> {{ l }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <input type="submit" value="Select">
+    </form>
+
     <table class="table_list">
     {% for m in minis %}
         <tr class="gris">

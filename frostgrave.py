@@ -25,7 +25,7 @@ app.config.update(dict(
     PASSWORD='1234'
 ))
 app.config.from_envvar('ORGANIZE_SETTINGS', silent=True)
-
+    
 
 def connect_db():
     """Connects to the specific database."""
@@ -76,12 +76,40 @@ def fight_select(mini):
     m = get_stats(mini)
     return render_template('select_minis.html', mini=m, team=team)
 
-@app.route('/')
-def show():
+@app.route('/', methods=['POST'])
+def show_post(list_name=None):
     db = get_db()
-    cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
+    
+    cur = db.execute("SELECT list FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID)).fetchall()
+    list_names = set()
+    for l in cur:
+        list_names.add(l[0])
+
+    list_n = request.form.get('list_n')
+    if list_n == '__all__':
+        del session['list_name']
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
+    else:
+        session['list_name'] = list_n
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, list_n))
     minis = cur.fetchall()
-    return render_template('show_minis.html', minis=minis)
+    return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=list_n)
+
+@app.route('/')
+def show(list_name=None):
+    db = get_db()
+    cur = db.execute("SELECT list FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID)).fetchall()
+    list_names = set()
+    for l in cur:
+        list_names.add(l[0])
+    if not 'list_name' in session:
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
+        active_list = None
+    else:
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, session['list_name']))
+        active_list = session['list_name']
+    minis = cur.fetchall()
+    return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=active_list)
 
 @app.route('/fight/', methods=['POST'])
 def fight():
@@ -200,8 +228,11 @@ def delete_mini(mini):
 
 @app.route('/add_mini/')
 def add_mini():
-    return render_template('add_mini.html')
-
+    if 'list_name' in session:
+        return render_template('add_mini.html', default_list=session['list_name'])
+    else:
+        return render_template('add_mini.html', default_list="")
+    
 @app.route('/edit_mini/<int:mini>')
 def edit_mini(mini):
     mini = get_stats(mini)
