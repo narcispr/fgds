@@ -1,7 +1,7 @@
 .table_main {
   /*table-layout: fixed;
   border-collapse: collapse;*/
-  width: 728px;
+  width: 800px;
   /*border: 1px solid black;*/
   margin: 0px;
   padding: 0px;
@@ -18,10 +18,40 @@
     border-spacing: 0px;
 }
 
-thead {
+.header_pergamin {
     background: url("pergamin_head.png");
-    height: 130px;
+    height: 188px;
 }
+
+.bottom_pergamin {
+    background: url("pergamin_foot.png");
+    height: 185px;
+}
+
+.body_pergamin {
+    background-image: url("pergamin_center.png");
+    background-repeat: repeat;
+}
+
+.left {
+    width: 100px;
+}
+
+.center {
+    width: 600px;
+}
+
+.right {
+    width: 100px;
+}
+
+
+th, td {
+  padding: 0px;
+  font-family: 'Homemade Apple', cursive;
+}
+
+
 
 .left_side {
     background: url("pergamin_left.png");
@@ -33,20 +63,4 @@ thead {
     background: url("pergamin_right.png");
     background-repeat: repeat-y;
     width: 227px;
-}
-
-.content {
-    background-image: url("pergamin_center.png");
-    background-repeat: repeat;
-}
-
-tfoot {
-    background: url("pergamin_foot.png");
-    height: 141px;
-}
-
-
-th, td {
-  padding: 0px;
-  font-family: 'Homemade Apple', cursive;
 }
