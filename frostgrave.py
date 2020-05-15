@@ -14,7 +14,7 @@ USER_ID = 'narcispr'
 COMBAT_LIST = 'initial'
 
 
-mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H', 
+mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H',
                'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
 spell_fields = ['rowid', 'mini_id', 'name', 'cast_value', 'description']
 
@@ -25,7 +25,7 @@ app.config.update(dict(
     PASSWORD='1234'
 ))
 app.config.from_envvar('ORGANIZE_SETTINGS', silent=True)
-    
+
 
 def connect_db():
     """Connects to the specific database."""
@@ -62,10 +62,10 @@ def get_members(list=None):
 def get_stats(id):
     db = get_db()
     cur = db.execute("SELECT rowid, * FROM minis WHERE rowid={} AND user=\"{}\"".format(id, USER_ID))
-    
+
     # col_name_list = [t[0] for t in cur.description]
     # print(col_name_list)
-    
+
     stats = cur.fetchall()
     if len(stats) == 1:
         return stats[0]
@@ -84,25 +84,15 @@ def fight_select(mini):
 
 @app.route('/', methods=['POST'])
 def show_post(list_name=None):
-    db = get_db()
-    
-    cur = db.execute("SELECT list FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID)).fetchall()
-    list_names = set()
-    for l in cur:
-        list_names.add(l[0])
-
     list_n = request.form.get('list_n')
     if list_n == '__all__':
         try:
             del session['list_name']
         except:
             pass
-        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
     else:
         session['list_name'] = list_n
-        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, list_n))
-    minis = cur.fetchall()
-    return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=list_n)
+    return redirect(url_for('show'))
 
 @app.route('/')
 def show(list_name=None):
@@ -124,23 +114,23 @@ def show(list_name=None):
 def fight():
     s1 = get_stats(request.form.get('mini1'))
     s2 = get_stats(request.form.get('mini2'))
-        
+
     combat_type = request.form.get('fight') == 'combat'
     msg = ''
     if not combat_type and s1[mini_fields.index('swp_range')] <= 0:
         msg = 'Mini {} has no weapon suitable for shooting'.format(s1[mini_fields.index('ńame')])
-    
+
     return render_template('fight.html', s1=s1, s2=s2, combat_type=combat_type, msg=msg)
-    
+
 @app.route('/shoot/', methods=['POST'])
 def shoot():
     s1 = get_stats(request.form['mini1'])
     s2 = get_stats(request.form['mini2'])
     s_dice = randrange(20) + 1
     t_dice = randrange(20) + 1
-    
+
     s_mod = int(request.form['S'])
-    
+
     cover = 0
     if request.form.get('cover') == 'l_cover':
         cover = 2
@@ -149,22 +139,22 @@ def shoot():
     hasty = 0
     if request.form.get('hasty') == 'hasty':
         hasty = 1
-    
+
     large = 0
     if request.form.get('large') == 'large':
         large = -2
-    
+
     t_mod = int(request.form.get('F')) + int(request.form.get('IT')) + cover + hasty + large
-    
+
     damage = 0
     if (s_dice + s_mod) > (t_dice + t_mod):
         d_total = s_dice + s_mod + int(request.form.get('w1_m'))
         a_total = int(request.form.get('armour'))
         damage = max(d_total - a_total, 0)
-    
+
     health = int(s2[mini_fields.index('H')])
     new_health = max(health - damage, 0)
-    
+
     return render_template('shoot_results.html', s1=s1, s2=s2, s_dice=s_dice, t_dice=t_dice, s_mod=s_mod, t_mod=t_mod, damage=damage,
                            health=health, new_health=new_health, w_mod=int(request.form.get('w1_m')), armour=int(request.form.get('armour')))
 
@@ -174,7 +164,7 @@ def combat():
     s2 = get_stats(request.form.get('mini2'))
     p1_dice = randrange(20) + 1
     p2_dice = randrange(20) + 1
-    
+
     sup1 = max(int(request.form.get('sup1')) - int(request.form.get('sup2')), 0) * 2
     sup2 = max(int(request.form.get('sup2')) - int(request.form.get('sup1')), 0) * 2
     p1_mod = int(request.form.get('F1')) + sup1
@@ -192,13 +182,13 @@ def combat():
     else:
         damage2 = max(p1_dice + p1_mod + int(request.form.get('wp1')) - int(request.form.get('a2')), 0)
         damage1 = max(p2_dice + p2_mod + int(request.form.get('wp2')) - int(request.form.get('a1')), 0)
-    
+
     health1 = int(s1[mini_fields.index('H')])
     health2 = int(s2[mini_fields.index('H')])
     new_health1 = max(health1 - damage1, 0)
     new_health2 = max(health2 - damage2, 0)
-    
-    return render_template('combat_results.html', s1=s1, s2=s2, p1_dice=p1_dice, p2_dice=p2_dice, p1_mod=p1_mod, p2_mod=p2_mod, 
+
+    return render_template('combat_results.html', s1=s1, s2=s2, p1_dice=p1_dice, p2_dice=p2_dice, p1_mod=p1_mod, p2_mod=p2_mod,
                            damage1=damage1, damage2=damage2, wp1=int(request.form.get('wp1')), wp2=int(request.form.get('wp2')),
                            a1=int(request.form.get('a1')), a2=int(request.form.get('a2')), winner=winner,
                            health1=health1, new_health1=new_health1, health2=health2, new_health2=new_health2)
@@ -209,7 +199,7 @@ def update_health(mini, new_health):
     db = get_db()
     db.execute("UPDATE minis SET H = {} WHERE rowid = {} AND user = \"{}\"".format(new_health, mini, USER_ID))
     db.commit()
-    
+
 @app.route('/apply_new_health/', methods=['POST'])
 def apply_new_health():
     use_mini1 = request.form.get('use_mini1')
@@ -217,13 +207,13 @@ def apply_new_health():
         mini1 = request.form.get('mini1')
         health1 = request.form.get('health1')
         update_health(int(mini1), max(int(health1), 0))
-    
+
     use_mini2 = request.form.get('use_mini2')
     if use_mini2 == '1':
         mini2 = request.form.get('mini2')
         health2 = request.form.get('health2')
         update_health(int(mini2), max(int(health2), 0))
-    
+
     return redirect(url_for('show'))
 
 
@@ -241,7 +231,7 @@ def add_mini():
         return render_template('add_mini.html', default_list=session['list_name'])
     else:
         return render_template('add_mini.html', default_list="")
-    
+
 @app.route('/edit_mini/<int:mini>')
 def edit_mini(mini):
     mini = get_stats(mini)
@@ -271,12 +261,12 @@ def add():
     else:
         id = int(request.form.get('id'))
         command = "UPDATE minis SET type={}, name=\"{}\", list=\"{}\", user=\"{}\", M={}, F={}, S={}, A={}, W={}, H={}, cwp_name=\"{}\", cwp_damage_mod={}, cwp_armour_mod={}, swp_name=\"{}\", swp_range={}, swp_damage_mod={} WHERE rowid={}".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, id)
-    
+
     print(command)
     db = get_db()
     db.execute(command)
     db.commit()
-    
+
     return redirect(url_for('show'))
 
 @app.route('/show_spells/<int:mini>')
@@ -361,7 +351,7 @@ def add_spell_to_mini():
     else:
         spell_id = int(request.form.get('id'))
         command = "UPDATE spells SET mini_id={}, name=\"{}\", cast_value={}, description=\"{}\" WHERE rowid = {}".format(mini_id, name, cost, description, spell_id)
-    
+
     print(command)
     db = get_db()
     db.execute(command)
@@ -410,7 +400,7 @@ def copy_mini(mini):
     print(command)
     db = get_db()
     db.execute(command)
-    db.commit()    
+    db.commit()
     return redirect(url_for('show'))
 
 @app.route('/random/')
