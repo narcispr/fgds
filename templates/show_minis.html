@@ -24,15 +24,17 @@
             <td class="name_wrap"><b>{{ m.name }}</b></td>
             <td>
                 {% if m.type == 0%}
-                    Wizard<br>
+                    Wizard
                 {% elif m.type == 1%}
-                    Apprentice<br>
+                    Apprentice
                 {% elif m.type == 2%}
-                    Soldier<br>
+                    Soldier
                 {% elif m.type == 3%}
-                    Monster<br>
+                    Monster
                 {% endif %}
-
+                {% if m.encounter_value > 0%}
+                &nbsp;<i>(appears with a {{m.encounter_value}})</i>
+                {% endif%}<br>
                 M: {{ m.M }} &nbsp; F: {{ m.F }} &nbsp; S: {{ m.S }} &nbsp; A: {{ m.A }} &nbsp; W: {{ m.W }} &nbsp; H: {{ m.H }}
             </td>
         </tr>

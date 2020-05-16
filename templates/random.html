@@ -2,6 +2,18 @@
 {% block body %}
 
     <script src='../static/random.js'></script>
+    <script>
+        function showEncounter(){
+            if (document.getElementById("random_encounter").style.display == "none"){
+                document.getElementById("random_encounter").style.display = "block";
+                document.getElementById("buto").innerHTML = "Refresh";
+            }
+            else {
+                window.open("/random");
+            }
+
+        }
+    </script>
     <body onload='init_compass();'>
         <table class="fg">
             <tr>
@@ -69,6 +81,22 @@
                 </td>
             </tr>
         </table>
+        <h3>Random encounter:</h3>
+        <button onclick="showEncounter()" id="buto">Show</button>
+        <div id="random_encounter" style="display: none;">
+            <table>
+                {% for m in encounter%}
+                <form action="{{ url_for('add_mini_to') }}" method=post  target="iframe_a">
+                    <input type="hidden" id="mini_id" name="mini_id" value="{{m.rowid}}">
+                <tr>
+                    <td><input type="text" id="name" name="name" value="{{m.name}}"></td>
+                    <td><input type="submit" value="Add Mini to {{ active_list }}"></td>
+                </tr>
+                </form>
+                {% endfor %}
+            </table>
+            <iframe height="50px" width="50%" name="iframe_a" scrolling="no" style="border:0px;"></iframe>
+        </div>
     </body>
     
 {% endblock %}

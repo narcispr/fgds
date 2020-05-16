@@ -5,7 +5,8 @@ from flask import Flask, g, session, render_template, abort, request, flash, red
 import sqlite3
 import os
 import datetime
-from random import randrange
+import random
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -15,7 +16,7 @@ COMBAT_LIST = 'initial'
 
 
 mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H',
-               'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod']
+               'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod', 'encounter_value']
 spell_fields = ['rowid', 'mini_id', 'name', 'cast_value', 'description']
 
 app.config.update(dict(
@@ -126,8 +127,8 @@ def fight():
 def shoot():
     s1 = get_stats(request.form['mini1'])
     s2 = get_stats(request.form['mini2'])
-    s_dice = randrange(20) + 1
-    t_dice = randrange(20) + 1
+    s_dice = random.randrange(20) + 1
+    t_dice = random.randrange(20) + 1
 
     s_mod = int(request.form['S'])
 
@@ -162,8 +163,8 @@ def shoot():
 def combat():
     s1 = get_stats(request.form.get('mini1'))
     s2 = get_stats(request.form.get('mini2'))
-    p1_dice = randrange(20) + 1
-    p2_dice = randrange(20) + 1
+    p1_dice = random.randrange(20) + 1
+    p2_dice = random.randrange(20) + 1
 
     sup1 = max(int(request.form.get('sup1')) - int(request.form.get('sup2')), 0) * 2
     sup2 = max(int(request.form.get('sup2')) - int(request.form.get('sup1')), 0) * 2
@@ -222,6 +223,9 @@ def delete_mini(mini):
     db = get_db()
     db.execute("DELETE FROM minis WHERE rowid = {} AND USER = \"{}\"".format(mini, USER_ID))
     db.commit()
+    db.execute("DELETE FROM spells WHERE mini_id = {}".format(mini))
+    db.commit()
+    
     return redirect(url_for('show'))
 
 
@@ -240,7 +244,6 @@ def edit_mini(mini):
 @app.route('/add/', methods=['POST'])
 def add():
     a = request.form.get('add') == "1"
-    print("Add: {}".format(a))
     t = request.form.get('type')
     name = request.form.get('name')
     l = request.form.get('list')
@@ -256,13 +259,13 @@ def add():
     swp_name = request.form.get('swp_name')
     swp_range = int(request.form.get('swp_range'))
     swp_damage_mod = int(request.form.get('swp_damage_mod'))
+    encounter = int(request.form.get('encounter'))
     if a:
-        command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod) VALUES ({}, \"{}\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {})".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod)
+        command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter_value) VALUES ({}, \"{}\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {}, {})".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter)
     else:
         id = int(request.form.get('id'))
-        command = "UPDATE minis SET type={}, name=\"{}\", list=\"{}\", user=\"{}\", M={}, F={}, S={}, A={}, W={}, H={}, cwp_name=\"{}\", cwp_damage_mod={}, cwp_armour_mod={}, swp_name=\"{}\", swp_range={}, swp_damage_mod={} WHERE rowid={}".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, id)
+        command = "UPDATE minis SET type={}, name=\"{}\", list=\"{}\", user=\"{}\", M={}, F={}, S={}, A={}, W={}, H={}, cwp_name=\"{}\", cwp_damage_mod={}, cwp_armour_mod={}, swp_name=\"{}\", swp_range={}, swp_damage_mod={}, encounter_value={} WHERE rowid={}".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter, id)
 
-    print(command)
     db = get_db()
     db.execute(command)
     db.commit()
@@ -281,7 +284,7 @@ def show_spells(mini):
 @app.route('/resist_spell/<int:mini>')
 def resist_spell(mini):
     m = get_stats(mini)
-    dice = randrange(20) + 1
+    dice = random.randrange(20) + 1
     return render_template('resist_spell.html', mini=m, dice=dice)
 
 @app.route('/resist_result/', methods=['POST'])
@@ -308,7 +311,6 @@ def remove_spell(spell):
     mini_id = s[spell_fields.index('mini_id')]
     db = get_db()
     command = "DELETE FROM spells WHERE rowid = {}".format(spell)
-    print(command)
     db.execute(command)
     db.commit()
     return redirect(url_for('show_spells', mini=mini_id))
@@ -317,7 +319,7 @@ def remove_spell(spell):
 def cast_spell(spell):
     s = get_spell(spell)
     m = get_stats(s[spell_fields.index('mini_id')])
-    dice = randrange(20) + 1
+    dice = random.randrange(20) + 1
     diff = s[spell_fields.index('cast_value')] - dice
     cast = False
     if diff <= 0:
@@ -330,7 +332,6 @@ def cast_spell(spell):
             damage = 2
         elif diff > 20:
             damage = 5
-    print("Dice: {}, Cast: {}, damage: {}".format(dice, cast, damage))
     return render_template('cast_results.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage)
 
 @app.route('/add_spell/', methods=['POST'])
@@ -352,7 +353,6 @@ def add_spell_to_mini():
         spell_id = int(request.form.get('id'))
         command = "UPDATE spells SET mini_id={}, name=\"{}\", cast_value={}, description=\"{}\" WHERE rowid = {}".format(mini_id, name, cost, description, spell_id)
 
-    print(command)
     db = get_db()
     db.execute(command)
     db.commit()
@@ -382,7 +382,6 @@ def empowering_spell():
             damage += 2
         elif diff > 20:
             damage += 5
-    print("Dice: {}, Cast: {}, Empowering: {}, damage: {}".format(dice, cast, empowering, damage))
     return render_template('cast_empowered.html', spell=s, mini=m, dice=dice, cast=cast, damage=damage, empowering=empowering)
 
 @app.route('/edit_spell/<int:spell>')
@@ -394,19 +393,43 @@ def edit_spell(spell):
 @app.route('/copy_mini/<int:mini>')
 def copy_mini(mini):
     m = get_stats(mini)
-    for i in m:
-        print(i)
     command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod) VALUES ({}, \"{}_copy\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {})".format(m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15], m[16])
-    print(command)
     db = get_db()
     db.execute(command)
     db.commit()
     return redirect(url_for('show'))
 
 @app.route('/random/')
-def random():
-    return render_template('random.html')
+def random_events():
+    db = get_db()
+    command = "SELECT rowid, * FROM minis WHERE list=\"encounter_list\""
+    cur = db.execute(command).fetchall()
+    rolls = set()
+    for i in cur:
+        rolls.add(i[mini_fields.index('encounter_value')])
+    encounter = random.choice(list(rolls))
+    command = "SELECT rowid, * FROM minis WHERE list=\"encounter_list\" AND encounter_value={}".format(encounter)
+    cur = db.execute(command).fetchall()
+    active_list = "All"
+    if 'list_name' in session:
+        active_list = session['list_name']
 
+    return render_template('random.html', encounter=cur, active_list=active_list)
+
+@app.route('/add_mini_to/', methods=['POST'])
+def add_mini_to():
+    mini = int(request.form.get('mini_id'))
+    name = request.form.get('name')
+    s = get_stats(mini)
+    list_name = "All"
+    if 'list_name' in session:
+        list_name = session['list_name']
+    command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter_value) VALUES ({}, \"{}\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {}, {})".format(s[1], name, list_name, s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12], s[13], s[14], s[15], s[16], 0)
+    db = get_db()
+    db.execute(command)
+    db.commit()
+
+    return render_template('empty.html', name=name, list_name=list_name)
 
 if __name__ == '__main__':
     app.run()
