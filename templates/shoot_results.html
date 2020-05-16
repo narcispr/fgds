@@ -1,6 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
-
+<script>
+    function changeDamage() {
+        var damage = document.getElementById("damage_input").value;
+        var health = {{ health }};
+        document.getElementById("damage_p").innerHTML= damage;
+        document.getElementById("health_p").innerHTML = (health - parseInt(damage)).toString();
+        document.getElementById("health2").value = health - parseInt(damage);
+    }
+</script>
 <h2>Shoot resuts:</h2>
 <table class="fg2">
     <tr class="gris">
@@ -21,10 +29,11 @@
 {% if damage > 0 %}
     <ul>
         <li>
-            <b>damage:</b> dice({{ s_dice }}) + mod({{ s_mod }}) + weapon_mod({{w_mod }}) - armour({{ armour }}) = <b>{{ damage }}</b>
+            <b>damage:</b> dice({{ s_dice }}) + mod({{ s_mod }}) + weapon_mod({{w_mod }}) - armour({{ armour }}) = 
+            <input onchange="changeDamage()" type="number" id="damage_input" name="damage_input" min=0, max=50 maxlength="3" value={{ damage }}>
         </li>
         <li>
-            <b>health:</b> {{ health }} - {{ damage }} = <b>{{ new_health }}</b>
+            <b>health:</b> {{ health }} - <span id="damage_p">{{ damage }}</span> = <span id="health_p"><b>{{ new_health }}</b></span>
         </li>
     </ul>
     
