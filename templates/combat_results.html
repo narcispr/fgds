@@ -5,15 +5,29 @@
         var damage = document.getElementById("damage1_input").value;
         var health = {{ health1 }};
         document.getElementById("damage1_p").innerHTML= damage;
-        document.getElementById("health1").value = health - parseInt(damage);
-        document.getElementById("health1_p").innerHTML = (health - parseInt(damage)).toString();
+        var new_health1 = Math.max(health - parseInt(damage), 0)
+        document.getElementById("health1").value = new_health1;
+        document.getElementById("health1_p").innerHTML = new_health1.toString();
+        if (new_health1 <= 0) {
+            document.getElementById("killed1").style.display = "block";
+        }
+        else {
+            document.getElementById("killed1").style.display = "none";      
+        }
     }
     function change_damage2(){
         var damage = document.getElementById("damage2_input").value;
         var health = {{ health2 }};
         document.getElementById("damage2_p").innerHTML= damage;
-        document.getElementById("health2").value = health - parseInt(damage);
-        document.getElementById("health2_p").innerHTML = (health - parseInt(damage)).toString();
+        var new_health2 = Math.max(health - parseInt(damage), 0)
+        document.getElementById("health2").value = new_health2;
+        document.getElementById("health2_p").innerHTML = new_health2.toString();
+        if (new_health2 <= 0) {
+            document.getElementById("killed2").style.display = "block";
+        }
+        else {
+            document.getElementById("killed2").style.display = "none";      
+        }
     }
 </script>
 
@@ -48,9 +62,18 @@
             <input onchange="change_damage2()" type="number" id="damage2_input" name="damage2_input" min=0 max=50 value={{ damage2 }} >
         </li>
         <li>
-            <b>{{ s2.name }} Health:</b> {{ health2 }} - <span id="damage2_p">{{ damage2 }}</span> =  <span id="health2_p">{{ health2 }}</span>
+            <b>{{ s2.name }} Health:</b> {{ health2 }} - <span id="damage2_p">{{ damage2 }}</span> =  <span id="health2_p">{{ new_health2 }}</span>
         </li>
     </ul>
+    {% if new_health2 == 0 %}
+    <div id="killed2" style="display: block;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% else %}
+    <div id="killed2" style="display: none;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% endif %}
   
 {% endif %}
 {% if winner == 2 or winner == 0 %}
@@ -60,9 +83,18 @@
             <input  onchange="change_damage1()" type="number" id="damage1_input" name="damage1_input" min=0 max=50 value={{ damage1 }}>
         </li>
         <li>
-            <b>{{ s1.name }} Health:</b> {{ health1 }} - <span id="damage1_p">{{ damage1 }}</span> = <span id="health1_p">{{ health1 }}</span>
+            <b>{{ s1.name }} Health:</b> {{ health1 }} - <span id="damage1_p">{{ damage1 }}</span> = <span id="health1_p">{{ new_health1 }}</span>
         </li>
     </ul>
+    {% if new_health1 == 0 %}
+    <div id="killed1" style="display: block;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% else %}
+    <div id="killed1" style="display: none;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% endif %}
     
 {% endif %}
     <input type="hidden" id="health1" name="health1" value={{ new_health1 }}>

@@ -5,8 +5,15 @@
         var damage = document.getElementById("damage_input").value;
         var health = {{ health }};
         document.getElementById("damage_p").innerHTML= damage;
-        document.getElementById("health_p").innerHTML = (health - parseInt(damage)).toString();
-        document.getElementById("health2").value = health - parseInt(damage);
+        var new_health = Math.max(health - parseInt(damage), 0);
+        document.getElementById("health_p").innerHTML = new_health.toString();
+        document.getElementById("health2").value = new_health;
+        if (new_health <= 0) {
+            document.getElementById("killed").style.display = "block";
+        }
+        else {
+            document.getElementById("killed").style.display = "none";      
+        }
     }
 </script>
 <h2>Shoot resuts:</h2>
@@ -30,16 +37,21 @@
     <ul>
         <li>
             <b>damage:</b> dice({{ s_dice }}) + mod({{ s_mod }}) + weapon_mod({{w_mod }}) - armour({{ armour }}) = 
-            <input onchange="changeDamage()" type="number" id="damage_input" name="damage_input" min=0, max=50 maxlength="3" value={{ damage }}>
+            <input onchange="changeDamage()" type="number" id="damage_input" name="damage_input" min="0", max="50" maxlength="3" value={{ damage }}>
         </li>
         <li>
             <b>health:</b> {{ health }} - <span id="damage_p">{{ damage }}</span> = <span id="health_p"><b>{{ new_health }}</b></span>
         </li>
     </ul>
-    
     {% if new_health == 0 %}
-        <p style="color:red"><b>{{ s2.name }} KILLED!</b></p>
-    {% endif %} 
+    <div id="killed" style="display: block;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% else %}
+    <div id="killed" style="display: none;">
+        <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+    </div>
+    {% endif %}
 {% else %}
     <ul>
         <li><b>No damage!</b></li>

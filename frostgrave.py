@@ -103,10 +103,10 @@ def show(list_name=None):
     for l in cur:
         list_names.add(l[0])
     if not 'list_name' in session:
-        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
+        cur = db.execute("SELECT rowid, * FROM minis WHERE H > 0 AND user=\"{}\" ORDER BY name".format(USER_ID))
         active_list = None
     else:
-        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, session['list_name']))
+        cur = db.execute("SELECT rowid, * FROM minis WHERE H > 0 AND user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, session['list_name']))
         active_list = session['list_name']
     minis = cur.fetchall()
     return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=active_list)
