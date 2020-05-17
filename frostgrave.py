@@ -6,14 +6,23 @@ import sqlite3
 import os
 import datetime
 import random
+from werkzeug.utils import secure_filename
+from PIL import Image
+from pathlib import Path
+
+
+UPLOAD_FOLDER = './static/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg'}
 
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.jinja_env.globals.update(zip=zip)
 
 USER_ID = 'narcispr'
 COMBAT_LIST = 'initial'
-
+Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 
 mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W', 'H',
                'cwp_name', 'cwp_damage_mod', 'cwp_armour_mod', 'swp_name', 'swp_range', 'swp_damage_mod', 'encounter_value']
@@ -103,13 +112,30 @@ def show(list_name=None):
     for l in cur:
         list_names.add(l[0])
     if not 'list_name' in session:
-        cur = db.execute("SELECT rowid, * FROM minis WHERE H > 0 AND user=\"{}\" ORDER BY name".format(USER_ID))
+        cur = db.execute("SELECT rowid, * FROM minis WHERE user=\"{}\" ORDER BY name".format(USER_ID))
         active_list = None
     else:
         cur = db.execute("SELECT rowid, * FROM minis WHERE H > 0 AND user=\"{}\" AND list=\"{}\" ORDER BY name".format(USER_ID, session['list_name']))
         active_list = session['list_name']
     minis = cur.fetchall()
-    return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=active_list)
+
+    figs_path = list()
+    for m in minis:
+        if os.path.exists(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.png".format(m[0]))):
+            figs_path.append(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.png".format(m[0])))
+        elif os.path.exists(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.jpg".format(m[0]))):
+            figs_path.append(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.jpg".format(m[0])))
+        elif m[mini_fields.index('type')] == 0:
+            figs_path.append("static/wizard.png")
+        elif m[mini_fields.index('type')] == 1:
+            figs_path.append("static/apprentice.png")
+        elif m[mini_fields.index('type')] == 2:
+            figs_path.append("static/soldier.png")
+        elif m[mini_fields.index('type')] == 3:
+            figs_path.append("static/monster.png")
+        else:
+            figs_path.append("")
+    return render_template('show_minis.html', minis=minis, list_names=list_names, active_list=active_list, figs_path=figs_path)
 
 @app.route('/fight/', methods=['POST'])
 def fight():
@@ -260,15 +286,38 @@ def add():
     swp_range = int(request.form.get('swp_range'))
     swp_damage_mod = int(request.form.get('swp_damage_mod'))
     encounter = int(request.form.get('encounter'))
+    rowid = -1
+
     if a:
         command = "INSERT INTO minis (type, name, list, user, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter_value) VALUES ({}, \"{}\", \"{}\", \"{}\", {}, {}, {}, {}, {}, {}, \"{}\", {}, {}, \"{}\", {}, {}, {})".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter)
+        db = get_db()
+        cur = db.execute(command)
+        db.commit()
+        rowid = cur.lastrowid
     else:
         id = int(request.form.get('id'))
         command = "UPDATE minis SET type={}, name=\"{}\", list=\"{}\", user=\"{}\", M={}, F={}, S={}, A={}, W={}, H={}, cwp_name=\"{}\", cwp_damage_mod={}, cwp_armour_mod={}, swp_name=\"{}\", swp_range={}, swp_damage_mod={}, encounter_value={} WHERE rowid={}".format(t, name, l, USER_ID, M, F, S, A, W, H, cwp_name, cwp_damage_mod, cwp_armour_mod, swp_name, swp_range, swp_damage_mod, encounter, id)
+        db = get_db()
+        db.execute(command)
+        db.commit()
+        rowid = id
 
-    db = get_db()
-    db.execute(command)
-    db.commit()
+    if 'file' not in request.files:
+        print('No file part')
+    else:
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            print('No selected file')
+        elif file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], "mini_fig_{}.{}".format(rowid, filename[-3:]))
+            file.save(path)       
+            size = os.stat(path).st_size
+            if size > 512000:
+                print("Remove file {}. Too big ({})".format(path, size))
+                os.remove(path)
 
     return redirect(url_for('show'))
 
@@ -430,6 +479,11 @@ def add_mini_to():
     db.commit()
 
     return render_template('empty.html', name=name, list_name=list_name)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     app.run()

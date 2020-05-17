@@ -19,7 +19,7 @@
     </form>
 
     <table class="table_list">
-    {% for m in minis %}
+    {% for m, img in zip(minis, figs_path) %}
         <tr class="gris">
             <td class="name_wrap"><b>{{ m.name }}</b></td>
             <td>
@@ -40,15 +40,7 @@
         </tr>
         <tr>
             <td>
-                {% if m.type == 0%}
-                    <img src="static/wizard.png" width="60" height="75">
-                {% elif m.type == 1%}
-                    <img src="static/apprentice.png" width="60" height="75">
-                {% elif m.type == 2%}
-                    <img src="static/soldier.png" width="60" height="75">
-                {% elif m.type == 3%}
-                    <img src="static/monster.png" width="60" height="75">
-                {% endif %}
+                <img src={{ img }} width="60" height="75">
             </td>
             <td><p>
                 <ul>
