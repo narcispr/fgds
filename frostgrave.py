@@ -157,11 +157,7 @@ def shoot():
 
     s_mod = int(request.form['S'])
 
-    cover = 0
-    if request.form.get('cover') == 'l_cover':
-        cover = 2
-    elif request.form.get('cover') == 'h_cover':
-        cover = 4
+    cover = int(request.form.get('cover'))
     hasty = 0
     if request.form.get('hasty') == 'hasty':
         hasty = 1

@@ -1,6 +1,84 @@
 {% extends "layout.html" %}
 {% block body %}
+<script>
+    function calculateShoot() {
+        document.getElementById("shootButton").style.display = "none";
+        var health = {{s2.H}};
+        var dice_attacker =  Math.floor(Math.random() * 20) + 1;
+        var dice_target =  Math.floor(Math.random() * 20) + 1;
+        var S = parseInt(document.getElementById('S').value);
+        var F = parseInt(document.getElementById('F').value);
+        var mod_wp = parseInt(document.getElementById('w1_m').value);
+        var A = parseInt(document.getElementById('armour').value);
+        var IT = parseInt(document.getElementById('IT').value);
+        var cover = 0;
+        var c_light = document.getElementById('c_light');
+        if (c_light.checked) {
+            cover = 2;
+        }
+        var c_heavy = document.getElementById('c_heavy');
+        if (c_heavy.checked) {
+            cover = 4;
+        }
+        var hasty = 0;
+        if (document.getElementById('hasty').checked) {
+            hasty = 1;
+        }
+        var large = 0;
+        if (document.getElementById('large').checked) {
+            large = 1;
+        }
+        console.log(dice_attacker)
+        console.log(dice_target)
+        console.log(S)
+        console.log(F)
+        console.log(mod_wp)
+        console.log(A)
+        console.log(IT)
+        console.log(cover)
+        console.log(hasty)
+        console.log(large)
 
+        document.getElementById('results').style.display = "block";
+        document.getElementById('s_dice').innerHTML = dice_attacker.toString();
+        document.getElementById('t_dice').innerHTML = dice_target.toString();
+        document.getElementById('s_mod').innerHTML = S.toString();
+        document.getElementById('t_mod').innerHTML = (F + IT + cover + hasty - large).toString();
+        if ((dice_attacker + S) > (dice_target + F + IT + cover + hasty - large)) {
+            document.getElementById('result_text').innerHTML = "Hit!";       
+            document.getElementById('damage').style.display = "block";
+            document.getElementById('s_dice2').innerHTML = dice_attacker.toString();
+            document.getElementById('s_mod2').innerHTML = S.toString();
+            document.getElementById('w_mod').innerHTML = mod_wp.toString();
+            document.getElementById('t_armour').innerHTML = A.toString();
+            var damage = Math.max(dice_attacker + S + mod_wp - A, 0);
+            document.getElementById('damage_input').value = damage;
+            document.getElementById('damage_p').innerHTML = damage.toString();
+            var new_health = Math.max(health - damage, 0);
+            document.getElementById('health_p').innerHTML = new_health.toString();
+            if (new_health <= 0) {
+                document.getElementById("killed").style.display = "block";
+            }
+        }
+        else {
+            document.getElementById('result_text').innerHTML = "Shoot Fails!";       
+        }
+    }
+    function changeDamage() {
+        var damage = document.getElementById("damage_input").value;
+        var health = {{ s2.H }};
+        document.getElementById("damage_p").innerHTML= damage;
+        var new_health = Math.max(health - parseInt(damage), 0);
+        document.getElementById("health_p").innerHTML = new_health.toString();
+        document.getElementById("health2").value = new_health;
+        if (new_health <= 0) {
+            document.getElementById("killed").style.display = "block";
+        }
+        else {
+            document.getElementById("killed").style.display = "none";      
+        }
+    }
+</script>
 <h2>Check modifiers:</h2>
 <p style="color:red">{{ msg }}</p>
     
@@ -47,7 +125,6 @@
     </div>
 {% else: %}
     <p>{{ s1.name }} shoots {{ s2.name }}</p>
-    <form action="{{ url_for('shoot') }}" method=post>
         <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
         <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
         <table class="fg">
@@ -75,21 +152,60 @@
             </tr>
             <tr class="fg2">
                 <td>Cover: </td> 
-                <td><input type="radio" id="c_none" value="c_none" name="cover" checked> None</td>
-                <td><input type="radio" id="c_light" value="c_light" name="cover"> Light </td>
-                <td><input type="radio" id="c_heavy" value="c_heavy" name="cover"> Heavy</td>
+                <td><input type="radio" id="c_none" value="0" name="cover" checked> None</td>
+                <td><input type="radio" id="c_light" value="2" name="cover"> Light </td>
+                <td><input type="radio" id="c_heavy" value="4" name="cover"> Heavy</td>
             </tr>
             <tr class="fg2">
                 <td>Hasty Shoot</td>
-                <td><input type="checkbox" id="hasty" name="hasty" value="hasty"></td>
+                <td><input type="checkbox" id="hasty" name="hasty"></td>
             </tr>
             <tr class="fg2">
                 <td>Large Target</td>
-                <td><input type="checkbox" id="large" name="large" value="large"></td>
+                <td><input type="checkbox" id="large" name="large"></td>
             </tr>
         </table>
-        <input type="submit" value="Shoot!">
-    </form>
+    <button onclick="calculateShoot()" id="shootButton">test</button>
+    <br>
+    <b><span id="result_text"></span></b>
+    <div id="results" style="display: none;">
+        <h2>Shoot resuts:</h2>
+            <table class="fg2">
+            <tr class="gris">
+                <th class="fg2">{{ s1.name }}</th>
+                <th>&nbsp;&nbsp;</th>
+                <th class="fg2">{{ s2.name }}</th>
+            </tr>
+            <tr>
+                <td class="fg2">dice(<span id="s_dice"></span>) + mod(<span id="s_mod"></span>)</td>
+                <td></td>
+                <td class="fg2">dice(<span id="t_dice"></span>) + mod(<span id="t_mod"></span>)</td>
+            </tr>
+        </table>
+        <div id="damage" style="display: none;">
+            <ul>
+                <li>
+                    <b>damage:</b> dice(<span id="s_dice2"></span>) + mod(<span id="s_mod2"></span>) + weapon_mod(<span id="w_mod"></span>) - armour(<span id="t_armour"></span>) = 
+                    <input onchange="changeDamage()" type="number" id="damage_input" name="damage_input" min="0", max="50" maxlength="3" value={{ damage }}>
+                </li>
+                <li>
+                    <b>health:</b> {{ s2.H }} - <span id="damage_p"></span> = <b><span id="health_p"></span></b>
+                </li>
+            </ul>
+            <div id="killed" style="display: none;">
+                <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+            </div>
+            <form action="{{ url_for('apply_new_health') }}" method=post class=add-task>
+                <input type="hidden" id="use_mini1" name="use_mini1" value="0">
+                <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
+                <input type="hidden" id="health1" name="health1" value={{ s1.H }}>
+                <input type="hidden" id="use_mini2" name="use_mini2" value="1">
+                <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
+                <input type="hidden" id="health2" name="health2" value={{ new_health }}>
+                <input type="submit" value="Apply">
+            </form>
+        </div>
+    </div>
 
 {% endif %}
 {% endblock %}
