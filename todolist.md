@@ -1,0 +1,5 @@
+- [ ] Reduce combat, shoot and cast spells to a single Flask page adding more JS.
+- [ ] Add Selector with all available user lists
+- [ ] Add User/Login features
+- [ ] Add Items and Skills (like spells)
+- [ ] Add icons for menu action 
