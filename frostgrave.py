@@ -250,7 +250,13 @@ def delete_mini(mini):
     db.commit()
     db.execute("DELETE FROM spells WHERE mini_id = {}".format(mini))
     db.commit()
-
+    path = os.path.join(app.config['UPLOAD_FOLDER'], "mini_fig_{}.png".format(mini))
+    if os.path.exists(path):
+        os.remove(path)
+    path = os.path.join(app.config['UPLOAD_FOLDER'], "mini_fig_{}.jpg".format(mini))
+    if os.path.exists(path):
+        os.remove(path)
+    
     return redirect(url_for('show'))
 
 
@@ -455,9 +461,11 @@ def random_events():
     rolls = set()
     for i in cur:
         rolls.add(i[mini_fields.index('encounter_value')])
-    encounter = random.choice(list(rolls))
-    command = "SELECT rowid, * FROM minis WHERE list=\"encounter_list\" AND encounter_value={}".format(encounter)
-    cur = db.execute(command).fetchall()
+    cur = list()
+    if len(list(rolls)) > 0:
+        encounter = random.choice(list(rolls))
+        command = "SELECT rowid, * FROM minis WHERE list=\"encounter_list\" AND encounter_value={}".format(encounter)
+        cur = db.execute(command).fetchall()
     active_list = "All"
     if 'list_name' in session:
         active_list = session['list_name']
