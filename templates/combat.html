@@ -1,0 +1,202 @@
+{% extends "layout.html" %}
+{% block body %}
+<script>
+    function calculateCombat() {
+        document.getElementById("fightButton").style.display = "none";
+        document.getElementById("combat_modifiers").style.display = "none";
+        
+        var health1 = {{s1.H}};
+        var health2 = {{s2.H}};
+        var dice_1 =  Math.floor(Math.random() * 20) + 1;
+        var dice_2 =  Math.floor(Math.random() * 20) + 1;
+        var F1 = parseInt(document.getElementById('F1').value);
+        var F2 = parseInt(document.getElementById('F2').value);
+        var S1 = parseInt(document.getElementById('sup1').value);
+        var S2 = parseInt(document.getElementById('sup2').value);
+        var mod_wp1 = parseInt(document.getElementById('wp1').value);
+        var mod_wp2 = parseInt(document.getElementById('wp2').value);
+        var A1 = parseInt(document.getElementById('a1').value);
+        var A2 = parseInt(document.getElementById('a2').value);
+        console.log("-------------");
+        console.log(A1);
+        console.log(A2);
+    
+        document.getElementById('results').style.display = "block";
+        document.getElementById('s1_dice').innerHTML = dice_1.toString();
+        document.getElementById('s2_dice').innerHTML = dice_2.toString();
+        document.getElementById('s1_mod').innerHTML = (F1 + Math.max(S1 - S2, 0) * 2).toString();
+        document.getElementById('s2_mod').innerHTML = (F2 + Math.max(S2 - S1, 0) * 2).toString();
+        var total_p1 = dice_1 + F1 + Math.max(S1 - S2, 0) * 2;
+        var total_p2 = dice_2 + F2 + Math.max(S2 - S1, 0) * 2;
+        if(total_p1 > total_p2){
+            document.getElementById('winner').innerHTML = "{{s1.name}} wins!";
+        }
+        else if(total_p1 < total_p2){
+            document.getElementById('winner').innerHTML = "{{s2.name}} wins!";
+        }
+        else {
+            document.getElementById('winner').innerHTML = "Draw!";
+        }
+            
+        if(total_p1 >= total_p2){
+            document.getElementById('damage2').style.display = "block";
+            document.getElementById('s_dice1').innerHTML = dice_1.toString(); 
+            document.getElementById('s_mod1').innerHTML = (F1 + Math.max(S1 - S2, 0) * 2).toString(); 
+            document.getElementById('w_mod1').innerHTML = mod_wp1.toString(); 
+            document.getElementById('armour2').innerHTML = A2.toString(); 
+            var damage2 = Math.max(dice_1 + F1 + Math.max(S1 - S2, 0) * 2 + mod_wp1 - A2, 0);
+            document.getElementById('damage2_input').value = damage2;
+            document.getElementById('damage_p2').innerHTML = damage2;
+            var new_health2 = Math.max(health2 - damage2, 0);
+            document.getElementById('health_p2').innerHTML = new_health2.toString();
+            document.getElementById('health2').value = new_health2;
+            
+            if (new_health2 == 0) {
+                document.getElementById("killed2").style.display = "block";
+            }
+        }
+        if(total_p2 >= total_p1){
+            document.getElementById('damage1').style.display = "block";
+            document.getElementById('s_dice2').innerHTML = dice_2.toString(); 
+            document.getElementById('s_mod2').innerHTML = (F2 + Math.max(S2 - S1, 0) * 2).toString();
+            document.getElementById('w_mod2').innerHTML = mod_wp2.toString(); 
+            document.getElementById('armour1').innerHTML = A1.toString(); 
+            var damage1 = Math.max(dice_2 + F2 + Math.max(S2 - S1, 0) * 2 + mod_wp2 - A1, 0);
+            document.getElementById('damage1_input').value = damage1;
+            document.getElementById('damage_p1').innerHTML = damage1;
+            var new_health1 = Math.max(health1 - damage1, 0);
+            document.getElementById('health_p1').innerHTML = new_health1.toString();
+            document.getElementById('health1').value = new_health1;
+    
+            if (new_health1 == 0) {
+                document.getElementById("killed1").style.display = "block";
+            }
+        }
+    }
+
+    function changeDamage1(){
+        var damage = document.getElementById("damage1_input").value;
+        var health = {{ s1.H }};
+        document.getElementById("damage_p1").innerHTML= damage;
+        var new_health1 = Math.max(health - parseInt(damage), 0)
+        document.getElementById("health1").value = new_health1;
+        document.getElementById("health_p1").innerHTML = new_health1.toString();
+        if (new_health1 <= 0) {
+            document.getElementById("killed1").style.display = "block";
+        }
+        else {
+            document.getElementById("killed1").style.display = "none";      
+        }
+    }
+
+    function changeDamage2(){
+        var damage = document.getElementById("damage2_input").value;
+        var health = {{ s2.H }};
+        document.getElementById("damage_p2").innerHTML= damage;
+        var new_health2 = Math.max(health - parseInt(damage), 0)
+        document.getElementById("health2").value = new_health2;
+        document.getElementById("health_p2").innerHTML = new_health2.toString();
+        if (new_health2 <= 0) {
+            document.getElementById("killed2").style.display = "block";
+        }
+        else {
+            document.getElementById("killed2").style.display = "none";      
+        }
+    }
+</script>
+<div id="combat_modifiers">    
+    <h2>Check hand-to-hand combat modifiers:</h2>    
+    <p>{{ s1.name }} hand-to-hand combat with {{ s2.name }}</p>
+    <div class="fg">
+        <table class="fg">
+            <tr class="gris">
+                <th>{{ s1.name }} ({{ s1.H }})</th> 
+                <th>&nbsp;&nbsp;</th>
+                <th>{{ s2.name }} ({{ s2.H }})</th>
+                <th>&nbsp;&nbsp;</th>
+            </tr>
+            <tr class="fg2">
+                <td>F:</td>
+                <td><input type="number" id="F1" name="F1" min="-15" max="15" value={{ s1.F }}></td> 
+                <td>F:</td>
+                <td><input type="number" id="F2" name="F2" min="-15" max="15" value={{ s2.F }}></td>
+            </tr>
+            <tr class="fg2">
+                <td>Supporters:</td>
+                <td><input type="number" id="sup1" name="sup1" min="0" max="40" value="0"> </td>
+                <td>Supporters:</td>
+                <td><input type="number" id="sup2" name="sup2" min="0" max="40" value="0"> </td>
+            </tr>
+            <tr class="fg2">
+                <td>Weapon Mod.:</td>
+                <td><input type="number" id="wp1" name="wp1" min="-15" max="15" value={{ s1.cwp_damage_mod }}> </td>
+                <td>Weapon Mod.:</td>
+                <td><input type="number" id="wp2" name="wp2" min="-15" max="15" value={{ s2.cwp_damage_mod }}> </td>
+            </tr>
+            <tr class="fg2">
+                <td>Armour:</td>
+                <td><input type="number" id="a1" name="a1" min="-15" max="50" value={{ s1.A - s1.cwp_armour_mod }}> </td>
+                <td>Armour:</td>
+                <td><input type="number" id="a2" name="a2" min="-15" max="50" value={{ s2.A - s2.cwp_armour_mod }}> </td>
+            </tr>
+        </table>
+        <button onclick="calculateCombat()" id="fightButton">Fight!</button>
+    </div>
+</div>
+
+<div id="results" style="display: none;">
+    <h2>Combat resuts:</h2> 
+    <table class="fg2">
+        <tr class="gris">
+            <th class="fg2">{{ s1.name }}</th>
+            <th>&nbsp;&nbsp;</th>
+            <th class="fg2">{{ s2.name }}</th>
+        </tr>
+        <tr>
+            <td class="fg2">dice(<span id="s1_dice"></span>) + mod(<span id="s1_mod"></span>)</td>
+            <td></td>
+            <td class="fg2">dice(<span id="s2_dice"></span>) + mod(<span id="s2_mod"></span>)</td>
+        </tr>
+    </table>
+    <b><span id="winner"></span></b>
+    <div id="damage1" style="display: none;">
+        <ul>
+            <li>
+                <b>damage:</b> dice(<span id="s_dice2"></span>) + mod(<span id="s_mod2"></span>) + weapon_mod(<span id="w_mod2"></span>) - armour(<span id="armour1"></span>) = 
+                <input onchange="changeDamage1()" type="number" id="damage1_input" name="damage_input" min="0", max="50" maxlength="3">
+            </li>
+            <li>
+                <b>health:</b> {{ s2.H }} - <span id="damage_p1"></span> = <b><span id="health_p1"></span></b>
+            </li>
+        </ul>
+        <div id="killed1" style="display: none;">
+            <p style="color:red" ><b>{{ s1.name }} KILLED!</b></p>
+        </div>
+    </div>
+    <div id="damage2" style="display: none;">
+        <ul>
+            <li>
+                <b>damage:</b> dice(<span id="s_dice1"></span>) + mod(<span id="s_mod1"></span>) + weapon_mod(<span id="w_mod1"></span>) - armour(<span id="armour2"></span>) = 
+                <input onchange="changeDamage2()" type="number" id="damage2_input" name="damage2_input" min="0", max="50" maxlength="3">
+            </li>
+            <li>
+                <b>health:</b> {{ s2.H }} - <span id="damage_p2"></span> = <b><span id="health_p2"></span></b>
+            </li>
+        </ul>
+        <div id="killed2" style="display: none;">
+            <p style="color:red" ><b>{{ s2.name }} KILLED!</b></p>
+        </div>
+    </div>
+    
+    <form action="{{ url_for('apply_new_health') }}" method=post class=add-task id="damage_form">
+        <input type="hidden" id="use_mini1" name="use_mini1" value="1">
+        <input type="hidden" id="mini1" name="mini1" value={{ s1.rowid }}>
+        <input type="hidden" id="health1" name="health1" value={{ s1.H }}>
+        <input type="hidden" id="use_mini2" name="use_mini2" value="1">
+        <input type="hidden" id="mini2" name="mini2" value={{ s2.rowid }}>
+        <input type="hidden" id="health2" name="health2" value={{ s2.H }}>
+        <input type="submit" value="Apply">
+    </form>
+    
+</div>
+{% endblock %}

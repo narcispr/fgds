@@ -143,10 +143,12 @@ def fight():
 
     combat_type = request.form.get('fight') == 'combat'
     msg = ''
-    if not combat_type and s1[mini_fields.index('swp_range')] <= 0:
-        msg = 'Mini {} has no weapon suitable for shooting'.format(s1[mini_fields.index('ńame')])
+    if not combat_type:
+        if s1[mini_fields.index('swp_range')] <= 0:
+            msg = 'Mini {} has no weapon suitable for shooting'.format(s1[mini_fields.index('name')])
+        return render_template('shoot.html', s1=s1, s2=s2, msg=msg)
 
-    return render_template('fight.html', s1=s1, s2=s2, combat_type=combat_type, msg=msg)
+    return render_template('combat.html', s1=s1, s2=s2)
 
 @app.route('/shoot/', methods=['POST'])
 def shoot():
