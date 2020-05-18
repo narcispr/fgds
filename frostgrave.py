@@ -4,14 +4,13 @@ from flask import Flask, g, session, render_template, abort, request, flash, red
 # from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
-import datetime
 import random
 from werkzeug.utils import secure_filename
-from PIL import Image
 from pathlib import Path
 
 
-UPLOAD_FOLDER = './static/images'
+UPLOAD_FOLDER = 'static/images'
+SHORT_UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg'}
 
 
@@ -122,9 +121,9 @@ def show(list_name=None):
     figs_path = list()
     for m in minis:
         if os.path.exists(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.png".format(m[0]))):
-            figs_path.append(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.png".format(m[0])))
+            figs_path.append(os.path.join(SHORT_UPLOAD_FOLDER, "mini_fig_{}.png".format(m[0])))
         elif os.path.exists(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.jpg".format(m[0]))):
-            figs_path.append(os.path.join(UPLOAD_FOLDER, "mini_fig_{}.jpg".format(m[0])))
+            figs_path.append(os.path.join(SHORT_UPLOAD_FOLDER, "mini_fig_{}.jpg".format(m[0])))
         elif m[mini_fields.index('type')] == 0:
             figs_path.append("static/wizard.png")
         elif m[mini_fields.index('type')] == 1:
@@ -251,7 +250,7 @@ def delete_mini(mini):
     db.commit()
     db.execute("DELETE FROM spells WHERE mini_id = {}".format(mini))
     db.commit()
-    
+
     return redirect(url_for('show'))
 
 
@@ -313,7 +312,7 @@ def add():
         elif file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             path = os.path.join(app.config['UPLOAD_FOLDER'], "mini_fig_{}.{}".format(rowid, filename[-3:]))
-            file.save(path)       
+            file.save(path)
             size = os.stat(path).st_size
             if size > 512000:
                 print("Remove file {}. Too big ({})".format(path, size))
