@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Developed by Narcis Palomeras
+# License GPLv3
 
 from flask import Flask, g, session, render_template, abort, request, flash, redirect, url_for
 # from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,7 +30,7 @@ mini_fields = ['rowid', 'type', 'name', 'list', 'user', 'M', 'F', 'S', 'A', 'W',
 spell_fields = ['rowid', 'mini_id', 'name', 'cast_value', 'description']
 
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'frostgrave.db'),
+    DATABASE=os.path.join(app.root_path, 'fgds.db'),
     SECRET_KEY='secret_key',
     USERNAME='admin',
     PASSWORD='1234'
@@ -42,7 +44,6 @@ def connect_db():
     rv.row_factory = sqlite3.Row
     return rv
 
-
 @app.teardown_appcontext
 def close_db(error):
     """Closes the database again at the end of the request."""
@@ -50,7 +51,6 @@ def close_db(error):
         g.sqlite_db.close()
     if error is not None:
         print( "An error has been produced.")
-
 
 def get_db():
     """Opens a new database connection if there is none yet for the
