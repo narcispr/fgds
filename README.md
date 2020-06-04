@@ -31,6 +31,8 @@ From main you can select which *list* you want to use.
 There is an special list called `encounter_list` where you can define all the *monsters* that can appear randomly during a scenario. At least another list with all the player warbands and the initial monsters in the scenario must be defined.
 To add a new *mini* to any list just press `Add new mini` and follow the instructions.
 
+![](readme/list.png)
+
 Once all the minis are defined and put in a single list the scenario can start.
 Each mini has a menu with the following entries:
 * Fight: Choose with witch *mini* you want to fight hand-to-hand or who you want to shoot. Edit the modifiers if necessaries and once ready push the *fight*/*shoot* button. All the calculations are shown. You can modify the damage (if any) and apply it or not.
@@ -40,12 +42,17 @@ Each mini has a menu with the following entries:
 * Copy: Adds a new *mini* with the same parameters.
 * Remove: Remove the *mini*.
 
+![](readme/shoot.png)
+![](readme/damage.png)
+
 ### Random
 From this page the following actions can be done:
 * Roll a dice (d2, d6, d20, dN).
 * Check initiative.
 * Choose a random course for a monster.
 * Roll a dice on the `encounter_list`. All the entries with the number rolled will be shown and can be added to the current active list. 
+
+![](readme/random.png)
 
 ## Things to take into account.
 
